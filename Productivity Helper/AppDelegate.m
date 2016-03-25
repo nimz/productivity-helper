@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "PreferencesController.h"
 
 @implementation AppDelegate
 
@@ -25,9 +26,11 @@ bool slacking = false;
 bool breaking = false;
 bool working = false;
 NSString *fileName = @"Productivity Helper/Statistics.txt";
+NSString *jsFileName = @"Productivity Helper/Statistics.js";
 NSString *visualizationName = @"Productivity Helper/Stats.html";
 
 NSString *filePath;
+NSString *jsFilePath;
 NSString *visualizationFile;
 NSFileManager *fileManager;
 NSDateFormatter *dateFormatter;
@@ -81,25 +84,68 @@ int numDays = 0;
 }
 
 + (void)writeString:(NSString *)str {
+    //printf("Writing %s\n", [str UTF8String]);
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     if (0 < [paths count]) {
         NSString *documentsDirPath = [paths objectAtIndex:0];
         filePath = [documentsDirPath stringByAppendingPathComponent:fileName];
+        jsFilePath = [documentsDirPath stringByAppendingPathComponent:jsFileName];
+        NSString *str2;
+        NSData *data;
         
         fileManager = [NSFileManager defaultManager];
         if ([fileManager fileExistsAtPath:filePath]) {
             // Add the text at the end of the file.
             NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:filePath];
             [fileHandler seekToEndOfFile];
-            NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
+            data = [str dataUsingEncoding:NSUTF8StringEncoding];
             [fileHandler writeData:data];
             [fileHandler closeFile];
         } else {
             // Create the file and write text to it.
-            str = [NSString stringWithFormat:@"%@/%@", @"0\n", str];
-            NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
+            str2 = [NSString stringWithFormat:@"%@%@", @"0\n", str];
+            data = [str2 dataUsingEncoding:NSUTF8StringEncoding];
             [data writeToFile:filePath atomically:YES];
         }
+        
+        bool successful = false;
+        if ([fileManager fileExistsAtPath:jsFilePath]) {
+            //printf("%s\n", [jsFilePath cStringUsingEncoding:NSUTF8StringEncoding]);
+            // Add the text at the end of the file.
+            NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:jsFilePath];
+            unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:jsFilePath error:nil] fileSize];
+            
+            if (fileSize > 2) {
+                successful = true;
+                [fileHandler seekToFileOffset:(fileSize-3)];
+                if (str.length > 1) {
+                    if ([[str substringFromIndex:(str.length-1)] isEqualToString:@"\n"]) {
+                        str2 = [str substringToIndex:(str.length-1)];
+                        str = [str2 stringByAppendingString:@"\\n"];
+                    }
+                }
+                data = [str dataUsingEncoding:NSUTF8StringEncoding];
+                [fileHandler writeData:data];
+                NSData *data2 = [@"\";\n" dataUsingEncoding:NSUTF8StringEncoding];
+                [fileHandler writeData:data2];
+                [fileHandler closeFile];
+            }
+        }
+        if (!successful) {
+            // Create the file and write text to it.
+            if (str.length > 1) {
+                if ([[str substringFromIndex:(str.length-1)] isEqualToString:@"\n"]) {
+                    str2 = [str substringToIndex:(str.length-1)];
+                    str = [str2 stringByAppendingString:@"\\n"];
+                }
+            }
+            str2 = [NSString stringWithFormat:@"%@%@", @"\\n", str];
+            str2 = [@"var stats=\"" stringByAppendingString:str2];
+            str2 = [str2 stringByAppendingString:@"\";\n"];
+            data = [str2 dataUsingEncoding:NSUTF8StringEncoding];
+            [data writeToFile:jsFilePath atomically:YES];
+        }
+
     }
 }
 
@@ -123,6 +169,14 @@ int numDays = 0;
             numDays = initialNumDays;
             prevNumDays = initialNumDays;
         }
+    }
+    NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:@"Statistics.html"];
+    NSData *data = [fileHandler readDataOfLength:10];
+    NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    printf("%s\n", [str UTF8String]);
+    if (![fileManager fileExistsAtPath:visualizationFile]) {
+        //if ( [[NSFileManager defaultManager] isReadableFileAtPath:visualizationFile] )
+        //    [[NSFileManager defaultManager] copyItemAtURL:source toURL:destination error:nil];
     }
     dateFormatter = [[NSDateFormatter alloc] init];
     dateFormatter.timeStyle = NSDateFormatterNoStyle;
@@ -185,7 +239,7 @@ int numDays = 0;
     NSString *start = [AppDelegate getTimeString];
     [AppDelegate stopSlacking:start];
     [AppDelegate stopBreaking:start];
-    NSString *stop = [NSString stringWithFormat:@"stopped work %@\n",start];
+    NSString *stop = [NSString stringWithFormat:@"Stopped Work %@\n",start];
     [AppDelegate writeString:stop];
     [AppDelegate updateNumDays];
 }
@@ -219,7 +273,7 @@ NSString *prefix = @"";
         NSString *str = [NSString stringWithFormat:@"Session %d, %@\n", numDays, [dateFormatter stringFromDate:date]];
         [AppDelegate writeString:str];
         NSString *start = [AppDelegate getTimeString];
-        NSString *str2 = [NSString stringWithFormat:@"started work %@\n",start];
+        NSString *str2 = [NSString stringWithFormat:@"Started Work %@\n",start];
         [AppDelegate writeString:str2];
         prefix = @"Working For: ";
         //counter = 0;
@@ -279,6 +333,13 @@ NSString *prefix = @"";
     timer = [NSTimer scheduledTimerWithTimeInterval:1.0/10.0
                      target:self selector:@selector(updateTimer)
                      userInfo:nil repeats:YES];
+}
+
+- (IBAction)openPreferences:(id)sender {
+    if (!prefController) {
+        prefController = [[PreferencesController alloc] initWithWindowNibName:@"Preferences"];
+    }
+    [prefController showWindow:self];
 }
 
 NSDate *timerStart;

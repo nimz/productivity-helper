@@ -7,8 +7,11 @@
 //
 
 #import <Cocoa/Cocoa.h>
+@class PreferencesController;
 
-@interface AppDelegate : NSObject <NSApplicationDelegate>
+@interface AppDelegate : NSObject <NSApplicationDelegate> {
+    @private PreferencesController *prefController;
+}
 
 @property (weak) IBOutlet NSButton *workButton;
 @property (weak) IBOutlet NSButton *breakButton;
@@ -18,6 +21,7 @@
 - (IBAction)startWork:(id)sender;
 - (IBAction)startBreak:(id)sender;
 - (IBAction)startSlack:(id)sender;
+- (IBAction)openPreferences:(id)sender;
 
 @end
 
