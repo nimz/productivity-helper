@@ -7,12 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		092B6AED1CA27F710062A54B /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 092B6AEC1CA27F710062A54B /* Preferences.xib */; };
+		092B6AF01CA27F8A0062A54B /* PreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 092B6AEF1CA27F8A0062A54B /* PreferencesController.m */; };
 		09ADB7411BE0B21E0084A3DA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 09ADB7401BE0B21E0084A3DA /* AppDelegate.m */; };
 		09ADB7441BE0B21E0084A3DA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 09ADB7431BE0B21E0084A3DA /* main.m */; };
 		09ADB7461BE0B21E0084A3DA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 09ADB7451BE0B21E0084A3DA /* Assets.xcassets */; };
 		09ADB7491BE0B21E0084A3DA /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 09ADB7471BE0B21E0084A3DA /* MainMenu.xib */; };
 		09ADB7541BE0B21E0084A3DA /* Productivity_HelperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 09ADB7531BE0B21E0084A3DA /* Productivity_HelperTests.m */; };
 		09ADB75F1BE0B21E0084A3DA /* Productivity_HelperUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 09ADB75E1BE0B21E0084A3DA /* Productivity_HelperUITests.m */; };
+		09B429921CA3F9A400934711 /* StatsWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 09B429911CA3F9A400934711 /* StatsWriter.m */; };
+		09B429941CA3F9DC00934711 /* Stats.html in Resources */ = {isa = PBXBuildFile; fileRef = 09B429931CA3F9DC00934711 /* Stats.html */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,6 +37,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		092B6AEC1CA27F710062A54B /* Preferences.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Preferences.xib; sourceTree = "<group>"; };
+		092B6AEE1CA27F8A0062A54B /* PreferencesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferencesController.h; sourceTree = "<group>"; };
+		092B6AEF1CA27F8A0062A54B /* PreferencesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferencesController.m; sourceTree = "<group>"; };
 		09ADB73C1BE0B21E0084A3DA /* Productivity Helper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Productivity Helper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		09ADB73F1BE0B21E0084A3DA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		09ADB7401BE0B21E0084A3DA /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -46,6 +53,9 @@
 		09ADB75A1BE0B21E0084A3DA /* Productivity HelperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Productivity HelperUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		09ADB75E1BE0B21E0084A3DA /* Productivity_HelperUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Productivity_HelperUITests.m; sourceTree = "<group>"; };
 		09ADB7601BE0B21E0084A3DA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		09B429901CA3F9A400934711 /* StatsWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatsWriter.h; sourceTree = "<group>"; };
+		09B429911CA3F9A400934711 /* StatsWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatsWriter.m; sourceTree = "<group>"; };
+		09B429931CA3F9DC00934711 /* Stats.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = Stats.html; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,10 +106,16 @@
 		09ADB73E1BE0B21E0084A3DA /* Productivity Helper */ = {
 			isa = PBXGroup;
 			children = (
+				09B429901CA3F9A400934711 /* StatsWriter.h */,
+				09B429911CA3F9A400934711 /* StatsWriter.m */,
+				09B429931CA3F9DC00934711 /* Stats.html */,
 				09ADB73F1BE0B21E0084A3DA /* AppDelegate.h */,
 				09ADB7401BE0B21E0084A3DA /* AppDelegate.m */,
-				09ADB7451BE0B21E0084A3DA /* Assets.xcassets */,
 				09ADB7471BE0B21E0084A3DA /* MainMenu.xib */,
+				092B6AEE1CA27F8A0062A54B /* PreferencesController.h */,
+				092B6AEF1CA27F8A0062A54B /* PreferencesController.m */,
+				092B6AEC1CA27F710062A54B /* Preferences.xib */,
+				09ADB7451BE0B21E0084A3DA /* Assets.xcassets */,
 				09ADB74A1BE0B21E0084A3DA /* Info.plist */,
 				09ADB7421BE0B21E0084A3DA /* Supporting Files */,
 			);
@@ -235,7 +251,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				09B429941CA3F9DC00934711 /* Stats.html in Resources */,
 				09ADB7461BE0B21E0084A3DA /* Assets.xcassets in Resources */,
+				092B6AED1CA27F710062A54B /* Preferences.xib in Resources */,
 				09ADB7491BE0B21E0084A3DA /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -261,6 +279,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				09B429921CA3F9A400934711 /* StatsWriter.m in Sources */,
+				092B6AF01CA27F8A0062A54B /* PreferencesController.m in Sources */,
 				09ADB7441BE0B21E0084A3DA /* main.m in Sources */,
 				09ADB7411BE0B21E0084A3DA /* AppDelegate.m in Sources */,
 			);
@@ -483,6 +503,7 @@
 				09ADB7651BE0B21E0084A3DA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		09ADB7661BE0B21E0084A3DA /* Build configuration list for PBXNativeTarget "Productivity HelperTests" */ = {
 			isa = XCConfigurationList;
@@ -491,6 +512,7 @@
 				09ADB7681BE0B21E0084A3DA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		09ADB7691BE0B21E0084A3DA /* Build configuration list for PBXNativeTarget "Productivity HelperUITests" */ = {
 			isa = XCConfigurationList;
@@ -499,6 +521,7 @@
 				09ADB76B1BE0B21E0084A3DA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
