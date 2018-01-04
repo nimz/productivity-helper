@@ -14,6 +14,8 @@
 }
 
 @property (weak) IBOutlet NSButton *workButton;
+@property (weak) IBOutlet NSButton *lolButton;
+@property (weak) IBOutlet NSButton *changeButton;
 @property (weak) IBOutlet NSButton *breakButton;
 @property (weak) IBOutlet NSButton *slackButton;
 @property (weak) IBOutlet NSTextField *timeText;
@@ -22,6 +24,7 @@
 - (IBAction)startBreak:(id)sender;
 - (IBAction)startSlack:(id)sender;
 - (IBAction)openPreferences:(id)sender;
+- (IBAction)changeActivity:(id)sender;
 
 @end
 

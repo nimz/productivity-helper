@@ -343,6 +343,10 @@ NSString *prefix = @"";
     [prefController showWindow:self];
 }
 
+- (IBAction)changeActivity:(id)sender {
+    printf("Hello there...\n");
+}
+
 NSDate *timerStart;
 - (void)updateTimer {
     NSDate *currentDate = [NSDate date];
