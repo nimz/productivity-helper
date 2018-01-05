@@ -111,7 +111,6 @@ int numDays = 0;
         
         bool successful = false;
         if ([fileManager fileExistsAtPath:jsFilePath]) {
-            //printf("%s\n", [jsFilePath cStringUsingEncoding:NSUTF8StringEncoding]);
             // Add the text at the end of the file.
             NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:jsFilePath];
             unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:jsFilePath error:nil] fileSize];
@@ -146,7 +145,6 @@ int numDays = 0;
             data = [str2 dataUsingEncoding:NSUTF8StringEncoding];
             [data writeToFile:jsFilePath atomically:YES];
         }
-
     }
 }
 
@@ -175,10 +173,6 @@ int numDays = 0;
     NSData *data = [fileHandler readDataOfLength:10];
     NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     printf("%s\n", [str UTF8String]);
-    if (![fileManager fileExistsAtPath:visualizationFile]) {
-        //if ( [[NSFileManager defaultManager] isReadableFileAtPath:visualizationFile] )
-        //    [[NSFileManager defaultManager] copyItemAtURL:source toURL:destination error:nil];
-    }
     dateFormatter = [[NSDateFormatter alloc] init];
     dateFormatter.timeStyle = NSDateFormatterNoStyle;
     dateFormatter.dateStyle = NSDateFormatterShortStyle;
@@ -189,7 +183,6 @@ int numDays = 0;
     timerFormatter = [[NSDateFormatter alloc] init];
     [timerFormatter setDateFormat:@"HH:mm:ss"];
     [timerFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0.0]];
-    //bool w = [ [ NSWorkspace sharedWorkspace ] launchApplication: @"Google Chrome.app" ];
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender {
@@ -247,12 +240,12 @@ int numDays = 0;
 
 NSString *prefix = @"";
 
-- (IBAction)startWork:(id)sender {
+- (IBAction)startSession:(id)sender {
     if (working) {
         [AppDelegate stopWorking];
         [_breakButton setTitle:@"Go On Break"];
         [_slackButton setTitle:@"Slack Off"];
-        [_workButton setTitle:@"Start Work Session"];
+        [_startButton setTitle:@"Start Work Session"];
         [_slackButton setEnabled:NO];
         [_breakButton setEnabled:NO];
         [_timeText setStringValue:@"Idle"];
@@ -265,24 +258,19 @@ NSString *prefix = @"";
         working = true;
         [_slackButton setEnabled:YES];
         [_breakButton setEnabled:YES];
-        [_workButton setTitle:@"Stop Work Session"];
-        //        dateFormatter.timeStyle = NSDateFormatterNoStyle;
-        //        dateFormatter.dateStyle = NSDateFormatterShortStyle;
+        [_startButton setTitle:@"Stop Work Session"];
         NSDate *date = [NSDate date];
-        //        NSLocale *usLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
-        //        [dateFormatter setLocale:usLocale];
         NSString *str = [NSString stringWithFormat:@"Session %d, %@\n", numDays, [dateFormatter stringFromDate:date]];
         [AppDelegate writeString:str];
         NSString *start = [AppDelegate getTimeString];
         NSString *str2 = [NSString stringWithFormat:@"Started Work %@\n",start];
         [AppDelegate writeString:str2];
         prefix = @"Working For: ";
-        //counter = 0;
         timerStart = [NSDate date];
         [timer invalidate];
         timer = [NSTimer scheduledTimerWithTimeInterval:1.0/10.0
-                         target:self selector:@selector(updateTimer)
-                         userInfo:nil repeats:YES];
+                 target:self selector:@selector(updateTimer)
+                 userInfo:nil repeats:YES];
     }
 }
 
@@ -307,8 +295,8 @@ NSString *prefix = @"";
     timerStart = [NSDate date];
     [timer invalidate];
     timer = [NSTimer scheduledTimerWithTimeInterval:1.0/10.0
-                     target:self selector:@selector(updateTimer)
-                     userInfo:nil repeats:YES];
+             target:self selector:@selector(updateTimer)
+             userInfo:nil repeats:YES];
 }
 
 - (IBAction)startSlack:(id)sender {
@@ -332,8 +320,8 @@ NSString *prefix = @"";
     timerStart = [NSDate date];
     [timer invalidate];
     timer = [NSTimer scheduledTimerWithTimeInterval:1.0/10.0
-                     target:self selector:@selector(updateTimer)
-                     userInfo:nil repeats:YES];
+             target:self selector:@selector(updateTimer)
+             userInfo:nil repeats:YES];
 }
 
 - (IBAction)openPreferences:(id)sender {
@@ -359,8 +347,8 @@ NSDate *timerStart;
 NSTimer *timer;
 - (void) resetTimer {
     timer = [NSTimer scheduledTimerWithTimeInterval:1.0/10.0
-                     target:self selector:@selector(updateTimer)
-                     userInfo:nil repeats:YES];
+             target:self selector:@selector(updateTimer)
+             userInfo:nil repeats:YES];
 }
 
 - (IBAction)showStatistics:(id)sender {

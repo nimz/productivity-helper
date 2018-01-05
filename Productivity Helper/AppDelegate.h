@@ -13,14 +13,14 @@
     @private PreferencesController *prefController;
 }
 
+@property (weak) IBOutlet NSButton *startButton;
 @property (weak) IBOutlet NSButton *workButton;
-@property (weak) IBOutlet NSButton *lolButton;
 @property (weak) IBOutlet NSButton *changeButton;
 @property (weak) IBOutlet NSButton *breakButton;
 @property (weak) IBOutlet NSButton *slackButton;
 @property (weak) IBOutlet NSTextField *timeText;
 - (IBAction)showStatistics:(id)sender;
-- (IBAction)startWork:(id)sender;
+- (IBAction)startSession:(id)sender;
 - (IBAction)startBreak:(id)sender;
 - (IBAction)startSlack:(id)sender;
 - (IBAction)openPreferences:(id)sender;

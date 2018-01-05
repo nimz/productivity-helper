@@ -16,11 +16,10 @@
             <connections>
                 <outlet property="breakButton" destination="CvW-tr-OuU" id="aiM-uj-cCA"/>
                 <outlet property="changeButton" destination="3HE-V9-Xgp" id="zfr-zA-wpu"/>
-                <outlet property="lolButton" destination="zPo-da-i8s" id="R0m-Xr-MEY"/>
                 <outlet property="slackButton" destination="9Uf-bE-7b9" id="PsK-1J-EJW"/>
+                <outlet property="startButton" destination="UAl-e2-nNt" id="e8p-h5-hsj"/>
                 <outlet property="timeText" destination="LqA-Gn-bDt" id="eYR-UR-DaI"/>
-                <outlet property="window" destination="QvC-M9-y7g" id="gIp-Ho-8D9"/>
-                <outlet property="workButton" destination="UAl-e2-nNt" id="auX-RW-8gZ"/>
+                <outlet property="workButton" destination="zPo-da-i8s" id="0eJ-WJ-JXo"/>
             </connections>
         </customObject>
         <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
@@ -206,7 +205,7 @@
                             <font key="font" metaFont="system"/>
                         </buttonCell>
                         <connections>
-                            <action selector="startWork:" target="Voe-Tx-rLC" id="GfU-Xa-myE"/>
+                            <action selector="startSession:" target="Voe-Tx-rLC" id="5eF-WU-5Gs"/>
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Uf-bE-7b9">
