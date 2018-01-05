@@ -38,21 +38,24 @@ NSDateFormatter *dateFormatter;
 NSDateFormatter *outputFormatter;
 NSDateFormatter *timerFormatter;
 
+NSDate *timerStart;
+NSTimer *timer;
+
 int initialNumDays = 0;
 int prevNumDays = 0;
 int numDays = 0;
 
-+(int) numDigitsH:(int)n {
++(int)numDigitsH:(int)n {
     if (n == 0) return 0;
     return 1 + [AppDelegate numDigitsH:(n / 10)];
 }
 
-+(int) numDigits:(int)n {
++(int)numDigits:(int)n {
     if (n == 0) return 1;
     return [AppDelegate numDigitsH:n];
 }
 
-+(void) updateNumDays {
++(void)updateNumDays {
     NSString *numstr = [@(numDays) stringValue];
     if ([AppDelegate numDigits:numDays] > [AppDelegate numDigits:prevNumDays]) {
         NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:filePath];
@@ -74,7 +77,7 @@ int numDays = 0;
     }
 }
 
-+(void) initializeFile {
++(void)initializeFile {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     if (0 < [paths count]) {
         NSString *documentsDirPath = [paths objectAtIndex:0];
@@ -191,13 +194,13 @@ int numDays = 0;
     return NSTerminateNow;
 }
 
-+ (NSString *) getTimeString {
++ (NSString *)getTimeString {
     NSDate * now = [NSDate date];
     NSString *start = [outputFormatter stringFromDate:now];
     return start;
 }
 
-+ (void) stopSlacking {
++ (void)stopSlacking {
     if (!slacking) return;
     slacking = false;
     NSString *start = [AppDelegate getTimeString];
@@ -205,7 +208,7 @@ int numDays = 0;
     [AppDelegate writeString:str];
 }
 
-+ (void) stopBreaking {
++ (void)stopBreaking {
     if (!breaking) return;
     breaking = false;
     NSString *start = [AppDelegate getTimeString];
@@ -213,21 +216,21 @@ int numDays = 0;
     [AppDelegate writeString:str];
 }
 
-+ (void) stopSlacking:(NSString *)start {
++ (void)stopSlacking:(NSString *)start {
     if (!slacking) return;
     slacking = false;
     NSString *str = [NSString stringWithFormat:@", %@\n",start];
     [AppDelegate writeString:str];
 }
 
-+ (void) stopBreaking:(NSString *)start {
++ (void)stopBreaking:(NSString *)start {
     if (!breaking) return;
     breaking = false;
     NSString *str = [NSString stringWithFormat:@", %@\n",start];
     [AppDelegate writeString:str];
 }
 
-+ (void) stopWorking {
++ (void)stopWorking {
     if (!working) return;
     working = false;
     NSString *start = [AppDelegate getTimeString];
@@ -266,11 +269,7 @@ NSString *prefix = @"";
         NSString *str2 = [NSString stringWithFormat:@"Started Work %@\n",start];
         [AppDelegate writeString:str2];
         prefix = @"Working For: ";
-        timerStart = [NSDate date];
-        [timer invalidate];
-        timer = [NSTimer scheduledTimerWithTimeInterval:1.0/10.0
-                 target:self selector:@selector(updateTimer)
-                 userInfo:nil repeats:YES];
+        [self resetTimer];
     }
 }
 
@@ -292,11 +291,7 @@ NSString *prefix = @"";
         [AppDelegate writeString:str];
         prefix = @"Break Time: ";
     }
-    timerStart = [NSDate date];
-    [timer invalidate];
-    timer = [NSTimer scheduledTimerWithTimeInterval:1.0/10.0
-             target:self selector:@selector(updateTimer)
-             userInfo:nil repeats:YES];
+    [self resetTimer];
 }
 
 - (IBAction)startSlack:(id)sender {
@@ -317,11 +312,7 @@ NSString *prefix = @"";
         [AppDelegate writeString:str];
         prefix = @"Time Wasted: ";
     }
-    timerStart = [NSDate date];
-    [timer invalidate];
-    timer = [NSTimer scheduledTimerWithTimeInterval:1.0/10.0
-             target:self selector:@selector(updateTimer)
-             userInfo:nil repeats:YES];
+    [self resetTimer];
 }
 
 - (IBAction)openPreferences:(id)sender {
@@ -335,7 +326,6 @@ NSString *prefix = @"";
     printf("Hello there...\n");
 }
 
-NSDate *timerStart;
 - (void)updateTimer {
     NSDate *currentDate = [NSDate date];
     NSTimeInterval timeInterval = [currentDate timeIntervalSinceDate:timerStart];
@@ -344,8 +334,9 @@ NSDate *timerStart;
     [self.timeText setStringValue:[NSString stringWithFormat:@"%@%@", prefix, timeString]];
 }
 
-NSTimer *timer;
-- (void) resetTimer {
+- (void)resetTimer {
+    timerStart = [NSDate date];
+    [timer invalidate];
     timer = [NSTimer scheduledTimerWithTimeInterval:1.0/10.0
              target:self selector:@selector(updateTimer)
              userInfo:nil repeats:YES];
