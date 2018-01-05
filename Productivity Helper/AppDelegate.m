@@ -157,6 +157,8 @@ int numDays = 0;
     [_timeText setAlignment:NSCenterTextAlignment];
     [_slackButton setEnabled:NO];
     [_breakButton setEnabled:NO];
+    [_workButton setEnabled:NO];
+    [_changeButton setEnabled:NO];
     [AppDelegate initializeFile];
     if ([fileManager fileExistsAtPath:filePath]) {
         NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:filePath];
@@ -251,6 +253,8 @@ NSString *prefix = @"";
         [_startButton setTitle:@"Start Work Session"];
         [_slackButton setEnabled:NO];
         [_breakButton setEnabled:NO];
+        [_workButton setEnabled:NO];
+        [_changeButton setEnabled:NO];
         [_timeText setStringValue:@"Idle"];
         [timer invalidate];
         timer = nil;
@@ -261,6 +265,8 @@ NSString *prefix = @"";
         working = true;
         [_slackButton setEnabled:YES];
         [_breakButton setEnabled:YES];
+        [_workButton setEnabled:YES];
+        [_changeButton setEnabled:YES];
         [_startButton setTitle:@"Stop Work Session"];
         NSDate *date = [NSDate date];
         NSString *str = [NSString stringWithFormat:@"Session %d, %@\n", numDays, [dateFormatter stringFromDate:date]];
@@ -270,12 +276,15 @@ NSString *prefix = @"";
         [AppDelegate writeString:str2];
         prefix = @"Working For: ";
         [self resetTimer];
+        [self changeActivity:sender];
     }
 }
 
 - (IBAction)startBreak:(id)sender {
     if (breaking) {
         [AppDelegate stopBreaking];
+        [_workButton setEnabled:YES];
+        [_changeButton setEnabled:YES];
         [_breakButton setTitle:@"Go On Break"];
         prefix = @"Working For: ";
     }
@@ -286,6 +295,8 @@ NSString *prefix = @"";
             [_slackButton setTitle:@"Slack Off"];
         }
         [_breakButton setTitle:@"End Break"];
+        [_workButton setEnabled:NO];
+        [_changeButton setEnabled:NO];
         NSString *start = [AppDelegate getTimeString];
         NSString *str = [NSString stringWithFormat:@"Break %@", start];
         [AppDelegate writeString:str];
@@ -297,6 +308,8 @@ NSString *prefix = @"";
 - (IBAction)startSlack:(id)sender {
     if (slacking) {
         [AppDelegate stopSlacking];
+        [_workButton setEnabled:YES];
+        [_changeButton setEnabled:YES];
         [_slackButton setTitle:@"Slack Off"];
         prefix = @"Working For: ";
     }
@@ -307,6 +320,8 @@ NSString *prefix = @"";
             [_breakButton setTitle:@"Go On Break"];
         }
         [_slackButton setTitle:@"Get Back To Work!"];
+        [_workButton setEnabled:NO];
+        [_changeButton setEnabled:NO];
         NSString *start = [AppDelegate getTimeString];
         NSString *str = [NSString stringWithFormat:@"Wasted %@", start];
         [AppDelegate writeString:str];
@@ -322,8 +337,30 @@ NSString *prefix = @"";
     [prefController showWindow:self];
 }
 
+// Adapted from https://stackoverflow.com/questions/20392802/how-to-display-an-input-box-in-mac-osx-using-c
+- (NSString *)inputBox: (NSString *)prompt{
+    NSAlert *alert = [[NSAlert alloc] init];
+    [alert setMessageText:prompt];
+    [alert addButtonWithTitle:@"OK"];
+    [alert addButtonWithTitle:@"Cancel"];
+
+    NSTextField *input = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 250, 24)];
+    [alert setAccessoryView:input];
+    NSInteger button = [alert runModal];
+    if (button == NSAlertFirstButtonReturn) {
+        [input validateEditing];
+        return [input stringValue];
+    }
+    else {
+        return nil;
+    }
+}
+
 - (IBAction)changeActivity:(id)sender {
-    printf("Hello there...\n");
+    NSString* mss = [self inputBox:@"What are you working on?"];
+    if (mss) {
+        NSLog(@"New Activity: %@\n", mss);
+    }
 }
 
 - (void)updateTimer {
