@@ -3,7 +3,6 @@
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
-        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -20,7 +19,6 @@
                 <outlet property="slackButton" destination="9Uf-bE-7b9" id="PsK-1J-EJW"/>
                 <outlet property="startButton" destination="UAl-e2-nNt" id="e8p-h5-hsj"/>
                 <outlet property="timeText" destination="LqA-Gn-bDt" id="eYR-UR-DaI"/>
-                <outlet property="workButton" destination="zPo-da-i8s" id="0eJ-WJ-JXo"/>
             </connections>
         </customObject>
         <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
@@ -230,23 +228,6 @@
                             <action selector="startBreak:" target="Voe-Tx-rLC" id="fe2-jY-UBP"/>
                         </connections>
                     </button>
-                    <button verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zPo-da-i8s">
-                        <rect key="frame" x="35" y="175" width="151" height="32"/>
-                        <buttonCell key="cell" type="push" title="Work..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="mVg-F6-sfU">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                    </button>
-                    <button verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3HE-V9-Xgp">
-                        <rect key="frame" x="48" y="164" width="112" height="16"/>
-                        <buttonCell key="cell" type="push" title="Change Activity" bezelStyle="rounded" alignment="center" controlSize="mini" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MYk-BB-Xmb">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="miniSystem"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="changeActivity:" target="Voe-Tx-rLC" id="mkC-IT-ISi"/>
-                        </connections>
-                    </button>
                     <textField verticalHuggingPriority="750" misplaced="YES" preferredMaxLayoutWidth="61" translatesAutoresizingMaskIntoConstraints="NO" id="LqA-Gn-bDt">
                         <rect key="frame" x="18" y="241" width="173" height="15"/>
                         <constraints>
@@ -258,25 +239,32 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
+                    <button verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3HE-V9-Xgp">
+                        <rect key="frame" x="49" y="152" width="122" height="32"/>
+                        <buttonCell key="cell" type="push" title="Change Activity" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="MYk-BB-Xmb">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="changeActivity:" target="Voe-Tx-rLC" id="mkC-IT-ISi"/>
+                        </connections>
+                    </button>
                 </subviews>
                 <constraints>
                     <constraint firstItem="UAl-e2-nNt" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="20" id="0c4-vi-NeR"/>
-                    <constraint firstItem="3HE-V9-Xgp" firstAttribute="centerX" secondItem="zPo-da-i8s" secondAttribute="centerX" id="8w3-lh-cei"/>
+                    <constraint firstItem="3HE-V9-Xgp" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="20" id="9Cu-LZ-4oj"/>
+                    <constraint firstAttribute="trailing" secondItem="3HE-V9-Xgp" secondAttribute="trailing" constant="20" id="DHQ-Kr-xW4"/>
                     <constraint firstItem="CvW-tr-OuU" firstAttribute="top" relation="greaterThanOrEqual" secondItem="9Uf-bE-7b9" secondAttribute="bottom" constant="20" id="GXh-z2-HlQ"/>
                     <constraint firstItem="UAl-e2-nNt" firstAttribute="top" relation="greaterThanOrEqual" secondItem="CvW-tr-OuU" secondAttribute="bottom" constant="20" id="HNc-5b-93N"/>
-                    <constraint firstItem="3HE-V9-Xgp" firstAttribute="width" relation="lessThanOrEqual" secondItem="zPo-da-i8s" secondAttribute="width" multiplier="3:4" id="IpU-pO-Gbw"/>
                     <constraint firstAttribute="trailing" secondItem="9Uf-bE-7b9" secondAttribute="trailing" constant="20" id="KfM-bO-4fo"/>
-                    <constraint firstAttribute="trailing" secondItem="zPo-da-i8s" secondAttribute="trailing" constant="20" id="PVt-MY-AyS"/>
                     <constraint firstAttribute="trailing" secondItem="UAl-e2-nNt" secondAttribute="trailing" constant="20" id="Rnz-Lz-Baf"/>
-                    <constraint firstItem="zPo-da-i8s" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="20" id="SNJ-ct-Z9b"/>
                     <constraint firstItem="LqA-Gn-bDt" firstAttribute="centerX" secondItem="EiT-Mj-1SZ" secondAttribute="centerX" id="SdQ-WA-4tG"/>
                     <constraint firstItem="9Uf-bE-7b9" firstAttribute="top" relation="greaterThanOrEqual" secondItem="3HE-V9-Xgp" secondAttribute="bottom" constant="20" id="X4Z-H1-foz"/>
-                    <constraint firstItem="3HE-V9-Xgp" firstAttribute="top" secondItem="zPo-da-i8s" secondAttribute="bottom" constant="4" id="YE0-k9-jz5"/>
                     <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="UAl-e2-nNt" secondAttribute="bottom" constant="15" id="bjo-oh-U37"/>
                     <constraint firstAttribute="trailing" secondItem="CvW-tr-OuU" secondAttribute="trailing" constant="20" id="fkI-Pz-UUm"/>
-                    <constraint firstItem="zPo-da-i8s" firstAttribute="top" relation="greaterThanOrEqual" secondItem="LqA-Gn-bDt" secondAttribute="bottom" constant="18" id="i2u-6V-XXX"/>
                     <constraint firstItem="9Uf-bE-7b9" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="20" id="kK4-c3-JPd"/>
                     <constraint firstItem="LqA-Gn-bDt" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" constant="15" id="lGj-4n-qYH"/>
+                    <constraint firstItem="3HE-V9-Xgp" firstAttribute="top" relation="greaterThanOrEqual" secondItem="LqA-Gn-bDt" secondAttribute="bottom" constant="18" id="nop-T6-w5z"/>
                     <constraint firstItem="CvW-tr-OuU" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="20" id="pcQ-vW-mY0"/>
                 </constraints>
             </view>
