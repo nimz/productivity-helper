@@ -5,7 +5,7 @@
 //  Created by Nimit Sohoni on 6/19/15.
 //  Copyright (c) 2015 Nimit Sohoni. All rights reserved.
 //
-// Note: daylight savings time is not handled correctly
+// Note: daylight savings time is not handled correctly, nor are midsession computer shutdowns
 
 #import "AppDelegate.h"
 #import "PreferencesController.h"
@@ -89,7 +89,6 @@ int numDays = 0;
 }
 
 + (void)writeString:(NSString *)str {
-    //printf("Writing %s\n", [str UTF8String]);
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     if (0 < [paths count]) {
         NSString *documentsDirPath = [paths objectAtIndex:0];
@@ -211,11 +210,19 @@ int numDays = 0;
     NSString *start = [AppDelegate getTimeString];
     NSString *str = [NSString stringWithFormat:@", %@\n",start];
     [AppDelegate writeString:str];
+    [AppDelegate startTask];
 }
 
 + (void)stopBreaking {
     if (!breaking) return;
     breaking = false;
+    NSString *start = [AppDelegate getTimeString];
+    NSString *str = [NSString stringWithFormat:@", %@\n",start];
+    [AppDelegate writeString:str];
+    [AppDelegate startTask];
+}
+
++ (void)stopTask {
     NSString *start = [AppDelegate getTimeString];
     NSString *str = [NSString stringWithFormat:@", %@\n",start];
     [AppDelegate writeString:str];
@@ -239,6 +246,8 @@ int numDays = 0;
     if (!working) return;
     working = false;
     NSString *start = [AppDelegate getTimeString];
+    if (!breaking && !slacking)
+        [AppDelegate stopTask];
     [AppDelegate stopSlacking:start];
     [AppDelegate stopBreaking:start];
     NSString *stop = [NSString stringWithFormat:@"Stopped Work %@\n",start];
@@ -279,7 +288,14 @@ NSString *prefix = @"";
         [AppDelegate writeString:str2];
         prefix = [currentTask stringByAppendingString:@": "];
         [self resetTimer];
+        [AppDelegate startTask];
     }
+}
+
++ (void)startTask {
+    NSString *start = [AppDelegate getTimeString];
+    NSString *str = [NSString stringWithFormat:@"Task: %@; %@", currentTask, start];
+    [AppDelegate writeString:str];
 }
 
 - (IBAction)startBreak:(id)sender {
@@ -294,6 +310,9 @@ NSString *prefix = @"";
         if (slacking) {
             [AppDelegate stopSlacking];
             [_slackButton setTitle:@"Slack Off"];
+        }
+        else {
+            [AppDelegate stopTask];
         }
         [_breakButton setTitle:@"End Break"];
         [_changeButton setEnabled:NO];
@@ -317,6 +336,9 @@ NSString *prefix = @"";
         if (breaking) {
             [AppDelegate stopBreaking];
             [_breakButton setTitle:@"Go On Break"];
+        }
+        else {
+            [AppDelegate stopTask];
         }
         [_slackButton setTitle:@"Get Back To Work!"];
         [_changeButton setEnabled:NO];
@@ -364,11 +386,18 @@ NSString *prefix = @"";
 }
 
 - (IBAction)changeActivity:(id)sender {
-    NSString* mss = [self inputBox:@"What are you working on?" allowCancel:(currentTask != nil)];
+    bool firstActivity = (currentTask == nil);
+    NSString* mss = [self inputBox:@"What are you working on?" allowCancel:(!firstActivity)];
     if (mss) {
         NSLog(@"New Activity: %@\n", mss);
         currentTask = mss;
         prefix = [currentTask stringByAppendingString:@": "];
+        [self resetTimer];
+        if (!firstActivity) {
+            [AppDelegate stopTask];
+            [AppDelegate startTask];
+        }
+        [_changeButton setTitle:[NSString stringWithFormat:@"Change Activity (%@)", currentTask]];
     }
 }
 
