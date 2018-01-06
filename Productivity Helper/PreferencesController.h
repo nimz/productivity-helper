@@ -10,4 +10,8 @@
 
 @interface PreferencesController : NSWindowController
 
+@property (weak) IBOutlet NSButton *checkbox;
+- (IBAction)toggleCheckbox:(id)sender;
+- (bool)showSeconds;
+
 @end

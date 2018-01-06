@@ -14,10 +14,24 @@
 
 @implementation PreferencesController
 
-- (void)windowDidLoad {
-  [super windowDidLoad];
+bool init = false, showSec = true;
 
-  // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
+- (void)windowDidLoad {
+    [super windowDidLoad];
+    init = true;
+}
+
+- (IBAction)toggleCheckbox:(id)sender {
+    NSLog(@"Toggled seconds checkbox\n");
+    showSec = !showSec;
+}
+
+- (bool)showSeconds {
+    return showSec;
+}
+
+- (bool)initialized {
+    return init;
 }
 
 @end

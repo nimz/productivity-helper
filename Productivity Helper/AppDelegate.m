@@ -26,6 +26,7 @@
 bool slacking = false;
 bool breaking = false;
 bool working = false;
+bool showSecondsLast = true;
 NSString *fileName = @"Productivity Helper/Statistics.txt";
 NSString *jsFileName = @"Productivity Helper/Statistics.js";
 NSString *visualizationName = @"Productivity Helper/Stats.html";
@@ -275,6 +276,7 @@ NSString *prefix = @"";
         timer = nil;
     }
     else {
+        NSLog(@"Starting session\n");
         prevNumDays = numDays;
         numDays++;
         working = true;
@@ -407,6 +409,15 @@ NSString *prefix = @"";
     NSDate *currentDate = [NSDate date];
     NSTimeInterval timeInterval = [currentDate timeIntervalSinceDate:timerStart];
     NSDate *timerDate = [NSDate dateWithTimeIntervalSince1970:timeInterval];
+    bool showSecondsCur = [prefController showSeconds];
+
+    if ([prefController init] && showSecondsCur != showSecondsLast) {
+        if (showSecondsCur)
+            [timerFormatter setDateFormat:@"HH:mm:ss"];
+        else
+            [timerFormatter setDateFormat:@"HH:mm"];
+        showSecondsLast = showSecondsCur;
+    }
     NSString *timeString = [timerFormatter stringFromDate:timerDate];
     NSTimeInterval totalTimeInterval = [currentDate timeIntervalSinceDate:sessionStart];
     NSDate *totalTimerDate = [NSDate dateWithTimeIntervalSince1970:totalTimeInterval];
