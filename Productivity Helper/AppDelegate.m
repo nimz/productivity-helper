@@ -33,6 +33,7 @@ NSString *visualizationName = @"Productivity Helper/Stats.html";
 NSString *filePath;
 NSString *jsFilePath;
 NSString *visualizationFile;
+NSString *currentTask;
 NSFileManager *fileManager;
 NSDateFormatter *dateFormatter;
 NSDateFormatter *outputFormatter;
@@ -244,6 +245,7 @@ int numDays = 0;
     NSString *stop = [NSString stringWithFormat:@"Stopped Work %@\n",start];
     [AppDelegate writeString:stop];
     [AppDelegate updateNumDays];
+    currentTask = nil;
 }
 
 NSString *prefix = @"";
@@ -271,6 +273,7 @@ NSString *prefix = @"";
         [_workButton setEnabled:YES];
         [_changeButton setEnabled:YES];
         [_startButton setTitle:@"Stop Work Session"];
+        [self changeActivity:sender];
         NSDate *date = [NSDate date];
         NSString *str = [NSString stringWithFormat:@"Session %d, %@\n", numDays, [dateFormatter stringFromDate:date]];
         [AppDelegate writeString:str];
@@ -279,7 +282,6 @@ NSString *prefix = @"";
         [AppDelegate writeString:str2];
         prefix = @"Working For: ";
         [self resetTimer];
-        [self changeActivity:sender];
     }
 }
 
@@ -341,28 +343,38 @@ NSString *prefix = @"";
 }
 
 // Adapted from https://stackoverflow.com/questions/20392802/how-to-display-an-input-box-in-mac-osx-using-c
-- (NSString *)inputBox: (NSString *)prompt{
-    NSAlert *alert = [[NSAlert alloc] init];
-    [alert setMessageText:prompt];
-    [alert addButtonWithTitle:@"OK"];
-    [alert addButtonWithTitle:@"Cancel"];
+- (NSString *)inputBox:(NSString *)prompt allowCancel:(bool)cancellable {
+    NSString *result;
+    unsigned int loopCount = 0;
+    do {
+        NSAlert *alert = [[NSAlert alloc] init];
+        [alert setMessageText:prompt];
+        [alert addButtonWithTitle:@"OK"];
+        if (cancellable)
+            [alert addButtonWithTitle:@"Cancel"];
 
-    NSTextField *input = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 250, 24)];
-    [alert setAccessoryView:input];
-    NSInteger button = [alert runModal];
-    if (button == NSAlertFirstButtonReturn) {
-        [input validateEditing];
-        return [input stringValue];
-    }
-    else {
-        return nil;
-    }
+        if (loopCount++ > 0)
+            [alert setInformativeText:@"Please enter the name of the activity"];
+
+        NSTextField *input = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 250, 24)];
+        [alert setAccessoryView:input];
+        NSInteger button = [alert runModal];
+        if (button == NSAlertFirstButtonReturn) {
+            [input validateEditing];
+            result = [input stringValue];
+        }
+        else {
+            return nil;
+        }
+    } while ([result isEqual:@""]);
+    return result;
 }
 
 - (IBAction)changeActivity:(id)sender {
-    NSString* mss = [self inputBox:@"What are you working on?"];
+    NSString* mss = [self inputBox:@"What are you working on?" allowCancel:(currentTask != nil)];
     if (mss) {
         NSLog(@"New Activity: %@\n", mss);
+        currentTask = mss;
     }
 }
 
