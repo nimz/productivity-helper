@@ -18,6 +18,7 @@
 @property (weak) IBOutlet NSButton *breakButton;
 @property (weak) IBOutlet NSButton *slackButton;
 @property (weak) IBOutlet NSTextField *timeText;
+@property (weak) IBOutlet NSTextField *overallText;
 - (IBAction)showStatistics:(id)sender;
 - (IBAction)startSession:(id)sender;
 - (IBAction)startBreak:(id)sender;

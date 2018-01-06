@@ -16,6 +16,7 @@
             <connections>
                 <outlet property="breakButton" destination="CvW-tr-OuU" id="aiM-uj-cCA"/>
                 <outlet property="changeButton" destination="3HE-V9-Xgp" id="zfr-zA-wpu"/>
+                <outlet property="overallText" destination="bZ7-Vy-dxV" id="eFb-gm-nme"/>
                 <outlet property="slackButton" destination="9Uf-bE-7b9" id="PsK-1J-EJW"/>
                 <outlet property="startButton" destination="UAl-e2-nNt" id="e8p-h5-hsj"/>
                 <outlet property="timeText" destination="LqA-Gn-bDt" id="eYR-UR-DaI"/>
@@ -249,6 +250,17 @@
                             <action selector="changeActivity:" target="Voe-Tx-rLC" id="mkC-IT-ISi"/>
                         </connections>
                     </button>
+                    <textField verticalHuggingPriority="750" misplaced="YES" preferredMaxLayoutWidth="61" translatesAutoresizingMaskIntoConstraints="NO" id="bZ7-Vy-dxV">
+                        <rect key="frame" x="18" y="271" width="173" height="15"/>
+                        <constraints>
+                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="hku-1L-gue"/>
+                        </constraints>
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="WbC-Hr-ldO">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
                 </subviews>
                 <constraints>
                     <constraint firstItem="UAl-e2-nNt" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="20" id="0c4-vi-NeR"/>
@@ -258,14 +270,16 @@
                     <constraint firstItem="UAl-e2-nNt" firstAttribute="top" relation="greaterThanOrEqual" secondItem="CvW-tr-OuU" secondAttribute="bottom" constant="20" id="HNc-5b-93N"/>
                     <constraint firstAttribute="trailing" secondItem="9Uf-bE-7b9" secondAttribute="trailing" constant="20" id="KfM-bO-4fo"/>
                     <constraint firstAttribute="trailing" secondItem="UAl-e2-nNt" secondAttribute="trailing" constant="20" id="Rnz-Lz-Baf"/>
+                    <constraint firstItem="LqA-Gn-bDt" firstAttribute="top" secondItem="bZ7-Vy-dxV" secondAttribute="bottom" constant="10" id="SDO-O0-zwD"/>
                     <constraint firstItem="LqA-Gn-bDt" firstAttribute="centerX" secondItem="EiT-Mj-1SZ" secondAttribute="centerX" id="SdQ-WA-4tG"/>
                     <constraint firstItem="9Uf-bE-7b9" firstAttribute="top" relation="greaterThanOrEqual" secondItem="3HE-V9-Xgp" secondAttribute="bottom" constant="20" id="X4Z-H1-foz"/>
                     <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="UAl-e2-nNt" secondAttribute="bottom" constant="15" id="bjo-oh-U37"/>
                     <constraint firstAttribute="trailing" secondItem="CvW-tr-OuU" secondAttribute="trailing" constant="20" id="fkI-Pz-UUm"/>
                     <constraint firstItem="9Uf-bE-7b9" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="20" id="kK4-c3-JPd"/>
-                    <constraint firstItem="LqA-Gn-bDt" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" constant="15" id="lGj-4n-qYH"/>
-                    <constraint firstItem="3HE-V9-Xgp" firstAttribute="top" relation="greaterThanOrEqual" secondItem="LqA-Gn-bDt" secondAttribute="bottom" constant="18" id="nop-T6-w5z"/>
+                    <constraint firstItem="3HE-V9-Xgp" firstAttribute="top" relation="greaterThanOrEqual" secondItem="LqA-Gn-bDt" secondAttribute="bottom" constant="15" id="nop-T6-w5z"/>
                     <constraint firstItem="CvW-tr-OuU" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="20" id="pcQ-vW-mY0"/>
+                    <constraint firstItem="bZ7-Vy-dxV" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" constant="15" id="t2F-Xl-RPh"/>
+                    <constraint firstItem="bZ7-Vy-dxV" firstAttribute="centerX" secondItem="EiT-Mj-1SZ" secondAttribute="centerX" id="yTo-ib-eez"/>
                 </constraints>
             </view>
             <point key="canvasLocation" x="455" y="494.5"/>

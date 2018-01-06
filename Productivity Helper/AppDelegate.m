@@ -39,7 +39,7 @@ NSDateFormatter *dateFormatter;
 NSDateFormatter *outputFormatter;
 NSDateFormatter *timerFormatter;
 
-NSDate *timerStart;
+NSDate *timerStart, *sessionStart;
 NSTimer *timer;
 
 int initialNumDays = 0;
@@ -156,6 +156,8 @@ int numDays = 0;
 {
     [_timeText setAlignment:NSCenterTextAlignment];
     [_timeText setPreferredMaxLayoutWidth:0];
+    [_overallText setAlignment:NSCenterTextAlignment];
+    [_overallText setPreferredMaxLayoutWidth:0];
     [_slackButton setEnabled:NO];
     [_breakButton setEnabled:NO];
     [_changeButton setEnabled:NO];
@@ -267,6 +269,7 @@ NSString *prefix = @"";
         [_slackButton setEnabled:NO];
         [_breakButton setEnabled:NO];
         [_changeButton setEnabled:NO];
+        [_overallText setStringValue:@""];
         [_timeText setStringValue:@"Idle"];
         [timer invalidate];
         timer = nil;
@@ -287,6 +290,7 @@ NSString *prefix = @"";
         NSString *str2 = [NSString stringWithFormat:@"Started Work %@\n",start];
         [AppDelegate writeString:str2];
         prefix = [currentTask stringByAppendingString:@": "];
+        sessionStart = [NSDate date];
         [self resetTimer];
         [AppDelegate startTask];
     }
@@ -404,7 +408,11 @@ NSString *prefix = @"";
     NSTimeInterval timeInterval = [currentDate timeIntervalSinceDate:timerStart];
     NSDate *timerDate = [NSDate dateWithTimeIntervalSince1970:timeInterval];
     NSString *timeString = [timerFormatter stringFromDate:timerDate];
+    NSTimeInterval totalTimeInterval = [currentDate timeIntervalSinceDate:sessionStart];
+    NSDate *totalTimerDate = [NSDate dateWithTimeIntervalSince1970:totalTimeInterval];
+    NSString *totalTimeString = [timerFormatter stringFromDate:totalTimerDate];
     [self.timeText setStringValue:[NSString stringWithFormat:@"%@%@", prefix, timeString]];
+    [self.overallText setStringValue:[NSString stringWithFormat:@"Overall Time: %@", totalTimeString]];
 }
 
 - (void)resetTimer {
