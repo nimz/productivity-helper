@@ -155,6 +155,7 @@ int numDays = 0;
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     [_timeText setAlignment:NSCenterTextAlignment];
+    [_timeText setPreferredMaxLayoutWidth:0];
     [_slackButton setEnabled:NO];
     [_breakButton setEnabled:NO];
     [_workButton setEnabled:NO];
