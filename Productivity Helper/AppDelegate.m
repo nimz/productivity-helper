@@ -301,7 +301,6 @@ NSString *prefix = @"";
 - (IBAction)startBreak:(id)sender {
     if (breaking) {
         [AppDelegate stopBreaking];
-        [_changeButton setEnabled:YES];
         [_breakButton setTitle:@"Go On Break"];
         prefix = [currentTask stringByAppendingString:@": "];
     }
@@ -315,7 +314,6 @@ NSString *prefix = @"";
             [AppDelegate stopTask];
         }
         [_breakButton setTitle:@"End Break"];
-        [_changeButton setEnabled:NO];
         NSString *start = [AppDelegate getTimeString];
         NSString *str = [NSString stringWithFormat:@"Break %@", start];
         [AppDelegate writeString:str];
@@ -327,7 +325,6 @@ NSString *prefix = @"";
 - (IBAction)startSlack:(id)sender {
     if (slacking) {
         [AppDelegate stopSlacking];
-        [_changeButton setEnabled:YES];
         [_slackButton setTitle:@"Slack Off"];
         prefix = [currentTask stringByAppendingString:@": "];
     }
@@ -341,7 +338,6 @@ NSString *prefix = @"";
             [AppDelegate stopTask];
         }
         [_slackButton setTitle:@"Get Back To Work!"];
-        [_changeButton setEnabled:NO];
         NSString *start = [AppDelegate getTimeString];
         NSString *str = [NSString stringWithFormat:@"Wasted %@", start];
         [AppDelegate writeString:str];
@@ -391,13 +387,15 @@ NSString *prefix = @"";
     if (mss) {
         NSLog(@"New Activity: %@\n", mss);
         currentTask = mss;
-        prefix = [currentTask stringByAppendingString:@": "];
-        [self resetTimer];
-        if (!firstActivity) {
-            [AppDelegate stopTask];
-            [AppDelegate startTask];
-        }
         [_changeButton setTitle:[NSString stringWithFormat:@"Change Activity (%@)", currentTask]];
+        if (!breaking && !slacking) {
+            prefix = [currentTask stringByAppendingString:@": "];
+            [self resetTimer];
+            if (!firstActivity) {
+                [AppDelegate stopTask];
+                [AppDelegate startTask];
+            }
+        }
     }
 }
 
