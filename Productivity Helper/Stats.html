@@ -2,7 +2,6 @@
 <html>
 <head>
 <script src="https://d3js.org/d3.v4.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 <script id="varDefs" src="Statistics.js"></script>
 </head>
 <body>
@@ -15,8 +14,31 @@
 
 <p>Total Time Wasted: </p>
 
+<p>From: <input type="text" id="from" value="mm/dd/yy" onclick="clearInput(0)" onchange="validateDate(0)" />
+   To:   <input type="text" id="to"   value="mm/dd/yy" onclick="clearInput(1)" onchange="validateDate(1)" /></p>
+
 </body>
 <script type="text/javascript">
+var cleared = [false, false];
+function clearInput(i) {
+  if (cleared[i]) return;
+  cleared[i] = true;
+  if (i == 0) d3.select("#from").attr("value", "");
+  else d3.select("#to").attr("value", "");
+}
+
+function validateDate(i) {
+  var datestr;
+  if (i == 0) datestr = d3.select("#from").property("value");
+  else datestr = d3.select("#to").property("value");
+  datestr = datestr.trim();
+  var vals = datestr.split("/");
+  if (vals.length != 3) {
+    alert("Please enter a valid date.");
+    return;
+  }
+}
+
 // found on http://stackoverflow.com/questions/4522213/can-someone-explain-this-javascript-real-time-clock-to-me
 function checkTime(i) {
   return (i < 10) ? "0" + i : i;
@@ -50,8 +72,13 @@ d3.text("Statistics.txt", function(d) {
         sessions.push(curSessData);
       }
       curSessData = [];
+      var sessInfo = line.split(", ");
+      curSessData.push(sessInfo[0].substring(8));
+      curSessData.push(sessInfo[1]);
     }
-    curSessData.push(line);
+    else {
+      curSessData.push(line);
+    }
   }
   sessions.push(curSessData);
   fulldata = sessions;
