@@ -1,43 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="d3/d3.min.js" charset="utf-8"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 <script id="varDefs" src="Statistics.js"></script>
-<script type="text/javascript">
-
-function read(){
-  var elem = document.getElementById("varDefs");
-  elem.parentElement.removeChild(elem);
-  var scriptref = document.createElement("script");
-  scriptref.setAttribute("id", "varDefs");
-  scriptref.setAttribute("type","text/javascript");
-  scriptref.setAttribute("src", "Statistics.js");
-  document.getElementsByTagName("head")[0].appendChild(scriptref);
-} 
-
-$(document).ready(function(){
-	  setInterval(read, 1000); // update statistics every second
-
-    // found on http://stackoverflow.com/questions/4522213/can-someone-explain-this-javascript-real-time-clock-to-me
-    function checkTime(i) {
-        return (i < 10) ? "0" + i : i;
-    }
-
-    function startTime() {
-        var today = new Date(),
-            h = checkTime(today.getHours()),
-            m = checkTime(today.getMinutes()),
-            s = checkTime(today.getSeconds());
-        document.getElementById('time').innerHTML = h + ":" + m + ":" + s;
-        t = setTimeout(function () {
-            startTime()
-        }, 250);
-    }
-    startTime();
-});
-
-</script>
 </head>
 <body>
 
@@ -50,4 +16,34 @@ $(document).ready(function(){
 <p>Total Time Wasted: </p>
 
 </body>
+<script type="text/javascript">
+function read() {
+  var elem = document.getElementById("varDefs");
+  elem.parentElement.removeChild(elem);
+  var scriptref = document.createElement("script");
+  scriptref.setAttribute("id", "varDefs");
+  scriptref.setAttribute("type","text/javascript");
+  scriptref.setAttribute("src", "Statistics.js");
+  document.getElementsByTagName("head")[0].appendChild(scriptref);
+}
+
+setInterval(read, 1000); // update statistics every second
+
+// found on http://stackoverflow.com/questions/4522213/can-someone-explain-this-javascript-real-time-clock-to-me
+function checkTime(i) {
+  return (i < 10) ? "0" + i : i;
+}
+
+function startTime() {
+  var today = new Date(),
+      h = checkTime(today.getHours()),
+      m = checkTime(today.getMinutes()),
+      s = checkTime(today.getSeconds());
+  document.getElementById('time').innerHTML = h + ":" + m + ":" + s;
+  t = setTimeout(function () {
+      startTime()
+  }, 250);
+}
+startTime();
+</script>
 </html>
