@@ -12,17 +12,6 @@
 
 @implementation AppDelegate
 
-/** Append text to a file located in the /Documents directory.
- 
- If file does not exist it will be created from scratch.
- 
- @param str String to write.
- @param fileName Name of the file.
- 
- From http://objective-c-functions.blogspot.com/2013/09/write-and-append-text-to-file.html
- 
- */
-
 bool slacking = false;
 bool breaking = false;
 bool working = false;
@@ -89,6 +78,11 @@ int numDays = 0;
     }
 }
 
+/** Appends text to statistics file located in the /Documents directory.
+ * If file does not exist it will be created from scratch.
+ * @param str String to write.
+ * From http://objective-c-functions.blogspot.com/2013/09/write-and-append-text-to-file.html
+ */
 + (void)writeString:(NSString *)str {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     if (0 < [paths count]) {
@@ -177,10 +171,6 @@ int numDays = 0;
             prevNumDays = initialNumDays;
         }
     }
-    NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:@"Statistics.html"];
-    NSData *data = [fileHandler readDataOfLength:10];
-    NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    printf("%s\n", [str UTF8String]);
     dateFormatter = [[NSDateFormatter alloc] init];
     dateFormatter.timeStyle = NSDateFormatterNoStyle;
     dateFormatter.dateStyle = NSDateFormatterShortStyle;
