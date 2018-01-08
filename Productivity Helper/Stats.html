@@ -56,6 +56,7 @@ function startTime() {
 }
 startTime();
 
+var re = new RegExp('(?<!\\\\),');
 var fulldata;
 d3.text("Statistics.txt", function(d) {
   var lines = d.split("\n");
@@ -72,7 +73,7 @@ d3.text("Statistics.txt", function(d) {
         sessions.push(curSessData);
       }
       curSessData = [];
-      var sessInfo = line.split(", ");
+      var sessInfo = line.split(re);
       curSessData.push(sessInfo[0].substring(8));
       curSessData.push(sessInfo[1]);
     }

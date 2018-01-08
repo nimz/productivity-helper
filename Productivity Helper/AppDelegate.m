@@ -289,8 +289,9 @@ NSString *prefix = @"";
 }
 
 + (void)startTask {
+    if (breaking || slacking) return;
     NSString *start = [AppDelegate getTimeString];
-    NSString *str = [NSString stringWithFormat:@"Task: %@; %@", currentTask, start];
+    NSString *str = [NSString stringWithFormat:@"Task: %@, %@", [currentTask stringByReplacingOccurrencesOfString:@"," withString:@"\\,"], start];
     [AppDelegate writeString:str];
 }
 
@@ -311,7 +312,7 @@ NSString *prefix = @"";
         }
         [_breakButton setTitle:@"End Break"];
         NSString *start = [AppDelegate getTimeString];
-        NSString *str = [NSString stringWithFormat:@"Break %@", start];
+        NSString *str = [NSString stringWithFormat:@"Break, %@", start];
         [AppDelegate writeString:str];
         prefix = @"Break Time: ";
     }
@@ -335,7 +336,7 @@ NSString *prefix = @"";
         }
         [_slackButton setTitle:@"Get Back To Work!"];
         NSString *start = [AppDelegate getTimeString];
-        NSString *str = [NSString stringWithFormat:@"Wasted %@", start];
+        NSString *str = [NSString stringWithFormat:@"Wasted, %@", start];
         [AppDelegate writeString:str];
         prefix = @"Time Wasted: ";
     }
