@@ -177,7 +177,7 @@ int numDays = 0;
     NSLocale *usLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
     [dateFormatter setLocale:usLocale];
     outputFormatter = [[NSDateFormatter alloc] init];
-    [outputFormatter setDateFormat:@"HH:mm:ss"];
+    [outputFormatter setDateFormat:@"MM/DD/YY HH:mm:ss"];
     timerFormatter = [[NSDateFormatter alloc] init];
     [timerFormatter setDateFormat:@"HH:mm:ss"];
     [timerFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0.0]];

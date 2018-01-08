@@ -63,9 +63,13 @@ d3.text("Statistics.txt", function(d) {
   var index = 0; // skip first line
   var firstSess = true;
   var sessions = [], curSessData = [];
+  var curSessDict = {};
+  var curStart, curEnd;
   while (index++ < lines.length - 2) { // skip last line (newline)
     var line = lines[index];
-    if (line.split(" ")[0] === "Session") {
+    var splitLine = line.split(" ");
+    var firstWord = splitLine[0];
+    if (firstWord === "Session") {
       if (firstSess) {
         firstSess = false;
       }
@@ -73,12 +77,32 @@ d3.text("Statistics.txt", function(d) {
         sessions.push(curSessData);
       }
       curSessData = [];
-      var sessInfo = line.split(re);
+      var sessInfo = line.split(",");
       curSessData.push(sessInfo[0].substring(8));
       curSessData.push(sessInfo[1]);
     }
+    else if (firstWord === "Started") {
+      curStart = Date.parse(splitLine[2] + splitLine[3]);
+    }
+    else if (firstWord === "Stopped") {
+      curEnd = Date.parse(splitLine[2] + splitLine[3]);
+    }
     else {
-      curSessData.push(line);
+      var activity = line.split(re);
+      var firstActWord = activity[0].split(" ")[0];
+      var actType;
+      if (firstActWord === "Task:") {
+        actType = 0;
+      }
+      else if (firstActWord === "Break") {
+        actType = 1;
+      }
+      else actType = 2;
+      var startTime = Date.parse(activity[1]), endTime = Date.parse(activity[2]);
+      var duration = (endTime - startTime)/1000;
+      activity.push(actType);
+      activity.push(duration);
+      curSessData.push(activity);
     }
   }
   sessions.push(curSessData);
