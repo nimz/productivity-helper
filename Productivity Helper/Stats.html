@@ -17,6 +17,11 @@
 <p>From: <input type="text" id="from" value="mm/dd/yy" onclick="clearInput(0)" onchange="validateDate(0)" />
    To:   <input type="text" id="to"   value="mm/dd/yy" onclick="clearInput(1)" onchange="validateDate(1)" /></p>
 
+<div>
+  <input type="checkbox" id="showTasks" value="showtasks" onclick="toggleMode()">
+  <label for="showTasks">Show breakdown by task</label>
+</div>
+
 </body>
 <script type="text/javascript">
 var w = 800, h = 500;
@@ -45,6 +50,12 @@ function validateDate(i) {
     alert("Please enter a valid date.");
     return;
   }
+}
+
+var showTasks = false;
+function toggleMode() {
+  showTasks = !showTasks;
+  processData();
 }
 
 // found on http://stackoverflow.com/questions/4522213/can-someone-explain-this-javascript-real-time-clock-to-me
@@ -142,24 +153,41 @@ function rgbToHex(d) {
 }
 var lf = 1.2;
 
-var workTotals1 = {}, workTotals2 = [0, 0, 0], sessLength = 0;
+var workInfo = {}, workTotals1 = [0, 0, 0], workTotals2 = [], tasks = [], sessLength = 0, loaded = false;
 function processData() {
-  for (var i = 0; i < fulldata.length; i++) {
-    var session = fulldata[i];
-    for (var j = 2; j < session.length; j++) {
-      workTotals2[session[j][3]] += session[j][4];
-      if (session[j][0] in workTotals1)
-        workTotals1[session[j][0]] += session[j][4];
-      else
-        workTotals1[session[j][0]] = session[j][4];
-      sessLength += session[j][4];
+  if (!loaded) {
+    for (var i = 0; i < fulldata.length; i++) {
+      var session = fulldata[i];
+      for (var j = 2; j < session.length; j++) {
+        workTotals1[session[j][3]] += session[j][4];
+        if (session[j][0] in workInfo)
+          workInfo[session[j][0]] += session[j][4];
+        else
+          workInfo[session[j][0]] = session[j][4];
+        sessLength += session[j][4];
+      }
     }
+    for (var key in workInfo) {
+      if (key === "Break" || key === "Wasted") continue;
+      tasks.push(key.replace("\\,", ","));
+      workTotals2.push(workInfo[key]);
+    }
+    tasks.push("Break");
+    tasks.push("Wasted");
+    workTotals2.push(workTotals1[1]);
+    workTotals2.push(workTotals1[2]);
+    loaded = true;
   }
-  var radius = h / 10, innerRadius = radius / 2;
+
+  var workData = showTasks ? workTotals2 : workTotals1;
+  var colors = showTasks ? d3.schemeCategory20 : d3.schemeCategory10;
+  var categories = showTasks ? tasks : ["Work Time", "Break Time", "Wasted Time"];
+  var radius = h / 5, innerRadius = radius / 2;
+  svg.selectAll("g").remove();
   var g = svg.append("g").attr("transform", "translate(" + w/2 + ", " + h/2 + ")");
-  var pie = d3.pie();
+  var pie = d3.pie().sort(null);
   var arc = g.selectAll(".arc")
-             .data(pie(workTotals2))
+             .data(pie(workData))
              .enter()
              .append("g")
              .attr("class", "arc");
@@ -168,7 +196,7 @@ function processData() {
   var label = d3.arc().outerRadius(radius*1.5).innerRadius(radius*1.5);
   arc.append("path")
      .attr("d", path)
-     .attr("fill", function(d,i) { return d3.schemeCategory10[i]; });
+     .attr("fill", function(d,i) { return colors[i]; });
 
   g.selectAll(".arc").on("mouseover", function(d,i){
     d3.select(this).append("text")
@@ -180,7 +208,7 @@ function processData() {
                    .attr("fill", "black")
                    .attr("style", "pointer-events: none; user-select: none;")
                    .text(function(d) { return d.data + "s (" + (d.data/sessLength*100).toFixed(1) + "%)"; });
-     var cur_rgb = hexToRgb(d3.schemeCategory10[i]);
+     var cur_rgb = hexToRgb(colors[i]);
      for (var key in cur_rgb) {
        cur_rgb[key] = Math.min(255, Math.round(cur_rgb[key] * lf));
      }
@@ -190,11 +218,11 @@ function processData() {
     d3.select(this)
       .select("text")
       .remove();
-    d3.select(this).selectAll("path").attr("fill", d3.schemeCategory10[i]);
+    d3.select(this).selectAll("path").attr("fill", colors[i]);
   });
   var legendSqSize = 18, legendSpacing = 4;
   var legend = svg.selectAll('.legend')
-                  .data(["Work Time", "Break Time", "Wasted Time"])
+                  .data(categories)
                   .enter()
                   .append('g')
                   .attr('class', 'legend')
@@ -208,8 +236,8 @@ function processData() {
   legend.append('rect')
         .attr('width', legendSqSize)
         .attr('height', legendSqSize)
-        .style('fill', function(d,i){return d3.schemeCategory10[i];})
-        .style('stroke', function(d,i){return d3.schemeCategory10[i];});
+        .style('fill', function(d,i){return colors[i];})
+        .style('stroke', function(d,i){return colors[i];});
   legend.append('text')
         .attr('x', legendSqSize + legendSpacing)
         .attr('y', legendSqSize - legendSpacing)
