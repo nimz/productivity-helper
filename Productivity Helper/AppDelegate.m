@@ -376,6 +376,7 @@ NSString *prefix = @"";
         if (button == NSAlertFirstButtonReturn) {
             [input validateEditing];
             result = [input stringValue];
+            result = [result stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         }
         else {
             return nil;
