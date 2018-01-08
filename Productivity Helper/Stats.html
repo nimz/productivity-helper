@@ -19,6 +19,14 @@
 
 </body>
 <script type="text/javascript">
+var w = 800, h = 500;
+var svg_div = d3.select("body")
+                .append("div")
+                .attr("align", "center")
+var svg = svg_div.append("svg")
+                 .attr("height", h)
+                 .attr("width", w);
+
 var cleared = [false, false];
 function clearInput(i) {
   if (cleared[i]) return;
@@ -58,7 +66,8 @@ startTime();
 
 var re = new RegExp('(?<!\\\\),');
 var fulldata;
-d3.text("Statistics.txt", function(d) {
+// avoid caching
+d3.text("Statistics.txt?" + Math.floor(Math.random() * 9999), function(d) {
   var lines = d.split("\n");
   var index = 0; // skip first line
   var firstSess = true;
@@ -107,7 +116,22 @@ d3.text("Statistics.txt", function(d) {
   }
   sessions.push(curSessData);
   fulldata = sessions;
+  processData();
   return d;
 });
+
+var workTotals1 = {}, workTotals2 = [0, 0, 0];
+function processData() {
+  for (var i = 0; i < fulldata.length; i++) {
+    var session = fulldata[i];
+    for (var j = 2; j < session.length; j++) {
+      workTotals2[session[j][3]] += session[j][4];
+      if (session[j][0] in workTotals1)
+        workTotals1[session[j][0]] += session[j][4];
+      else
+        workTotals1[session[j][0]] = session[j][4];
+    }
+  }
+}
 </script>
 </html>
