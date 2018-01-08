@@ -19,6 +19,9 @@ bool init = false, showSec = true;
 - (void)windowDidLoad {
     [super windowDidLoad];
     init = true;
+    NSWindow *prefWindow = [[[NSApplication sharedApplication] windows] objectAtIndex:1];
+    [[prefWindow standardWindowButton:NSWindowZoomButton] setEnabled:NO];
+    [prefWindow setTitle:@"Preferences"];
 }
 
 - (IBAction)toggleCheckbox:(id)sender {

@@ -183,6 +183,12 @@ int numDays = 0;
     [timerFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0.0]];
     NSWindow *mainWindow = [[[NSApplication sharedApplication] windows] objectAtIndex:0]; // thanks to https://stackoverflow.com/questions/7620251/how-to-get-main-window-app-delegate-from-other-class-subclass-of-nsviewcontro
     [mainWindow setLevel:NSFloatingWindowLevel];
+    [[mainWindow standardWindowButton:NSWindowCloseButton] setEnabled:NO];
+}
+
+// see https://github.com/electron/electron/issues/3038
+- (void)applicationWillFinishLaunching:(nonnull NSNotification *)notification {
+    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"NSFullScreenMenuItemEverywhere"];
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender {
