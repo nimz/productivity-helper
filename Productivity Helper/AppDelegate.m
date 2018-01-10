@@ -20,13 +20,16 @@ bool working = false;
 bool showSecondsLast = true;
 NSString *fileName = @"Productivity Helper/Statistics.txt";
 NSString *jsFileName = @"Productivity Helper/Statistics.js";
-NSString *visualizationName = @"Productivity Helper/Stats_redir.html";
+NSString *redirName = @"Productivity Helper/Stats_redir.html";
+NSString *visualizationName = @"Productivity Helper/Stats.html";
 NSString *portString;
 
 NSString *filePath;
 NSString *jsFilePath;
+NSString *redirFile;
 NSString *visualizationFile;
 NSString *currentTask;
+NSString *setupScriptPath;
 NSString *killServerPath;
 NSFileManager *fileManager;
 NSDateFormatter *dateFormatter;
@@ -40,17 +43,17 @@ int initialNumDays = 0;
 int prevNumDays = 0;
 int numDays = 0;
 
-+(int)numDigitsH:(int)n {
++ (int)numDigitsH:(int)n {
     if (n == 0) return 0;
     return 1 + [AppDelegate numDigitsH:(n / 10)];
 }
 
-+(int)numDigits:(int)n {
++ (int)numDigits:(int)n {
     if (n == 0) return 1;
     return [AppDelegate numDigitsH:n];
 }
 
-+(void)updateNumDays {
++ (void)updateNumDays {
     NSString *numstr = [@(numDays) stringValue];
     if ([AppDelegate numDigits:numDays] > [AppDelegate numDigits:prevNumDays]) {
         NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:filePath];
@@ -72,11 +75,12 @@ int numDays = 0;
     }
 }
 
-+(void)initializeFile {
++ (void)initializeFiles {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     if (0 < [paths count]) {
         NSString *documentsDirPath = [paths objectAtIndex:0];
         filePath = [documentsDirPath stringByAppendingPathComponent:fileName];
+        redirFile = [documentsDirPath stringByAppendingPathComponent:redirName];
         visualizationFile = [documentsDirPath stringByAppendingPathComponent:visualizationName];
         fileManager = [NSFileManager defaultManager];
     }
@@ -150,18 +154,31 @@ int numDays = 0;
     }
 }
 
++ (void)genRedirFile {
+    NSString *htmlstr = @"<html><head><meta http-equiv=\"refresh\" content=\"0; "
+                          "url=http://localhost:8008/Stats.html\" /></head></html>";
+    NSData *data = [htmlstr dataUsingEncoding:NSUTF8StringEncoding];
+    [data writeToFile:redirFile atomically:YES];
+}
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
-{
-    portString = [NSString stringWithFormat:@"%u", PORT];
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+    [_slackButton setEnabled:NO];
+    [_breakButton setEnabled:NO];
+    [_changeButton setEnabled:NO];
+    [_startButton setEnabled:NO];
     [_timeText setAlignment:NSCenterTextAlignment];
     [_timeText setPreferredMaxLayoutWidth:0];
     [_overallText setAlignment:NSCenterTextAlignment];
     [_overallText setPreferredMaxLayoutWidth:0];
-    [_slackButton setEnabled:NO];
-    [_breakButton setEnabled:NO];
-    [_changeButton setEnabled:NO];
-    [AppDelegate initializeFile];
+    NSWindow *mainWindow = [[[NSApplication sharedApplication] windows] objectAtIndex:0]; // thanks to https://stackoverflow.com/questions/7620251/how-to-get-main-window-app-delegate-from-other-class-subclass-of-nsviewcontro
+    [mainWindow setLevel:NSFloatingWindowLevel];
+    [[mainWindow standardWindowButton:NSWindowCloseButton] setEnabled:NO];
+    NSBundle *bundle = [NSBundle mainBundle];
+    setupScriptPath = [bundle pathForResource:@"runner" ofType:@"sh"];
+    killServerPath = [bundle pathForResource:@"kill_server" ofType:@"sh"];
+    portString = [NSString stringWithFormat:@"%u", PORT];
+    [AppDelegate setupServer];
+    [AppDelegate initializeFiles];
     if ([fileManager fileExistsAtPath:filePath]) {
         NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:filePath];
         NSData *data = [fileHandler readDataOfLength:10];
@@ -186,12 +203,11 @@ int numDays = 0;
     timerFormatter = [[NSDateFormatter alloc] init];
     [timerFormatter setDateFormat:@"HH:mm:ss"];
     [timerFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0.0]];
-    NSWindow *mainWindow = [[[NSApplication sharedApplication] windows] objectAtIndex:0]; // thanks to https://stackoverflow.com/questions/7620251/how-to-get-main-window-app-delegate-from-other-class-subclass-of-nsviewcontro
-    [mainWindow setLevel:NSFloatingWindowLevel];
-    [[mainWindow standardWindowButton:NSWindowCloseButton] setEnabled:NO];
-    NSBundle *main = [NSBundle mainBundle];
-    killServerPath = [main pathForResource:@"kill_server" ofType:@"sh"];
-    NSLog(killServerPath);
+    [_startButton setEnabled:YES];
+    [AppDelegate genRedirFile];
+    NSString *visualizationPath = [bundle pathForResource:@"Stats" ofType:@"html"];
+    NSLog(@"Path to canonical visualization file: %@", visualizationPath);
+    [fileManager copyItemAtPath:visualizationPath toPath:visualizationFile error:nil];
 }
 
 // see https://github.com/electron/electron/issues/3038
@@ -201,9 +217,27 @@ int numDays = 0;
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender {
     [AppDelegate stopWorking];
-    [AppDelegate stopServer];
+    //[AppDelegate stopServer]; // May as well leave server up so user can still see stats!
     NSLog(@"Application exited");
     return NSTerminateNow;
+}
+
++ (void)setupServer {
+    NSPipe *pipe = [NSPipe pipe];
+    NSFileHandle *file = pipe.fileHandleForReading;
+    NSTask *task = [[NSTask alloc] init];
+    [task setLaunchPath:@"/bin/bash"];
+    [task setArguments:[NSArray arrayWithObjects:setupScriptPath, portString, nil]];
+    [task setStandardOutput:pipe];
+    [task setStandardError:pipe];
+    [task launch];
+    NSData *data = [file readDataToEndOfFile];
+    [file closeFile];
+    NSString *output = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    if ([output length] > 0)
+        NSLog(@"Setup script output: %@", output);
+    else
+        NSLog (@"Server %@ running", portString);
 }
 
 + (void)stopServer {
@@ -405,7 +439,7 @@ NSString *prefix = @"";
 
 - (IBAction)changeActivity:(id)sender {
     bool firstActivity = (currentTask == nil);
-    NSString* mss = [self inputBox:@"What are you working on?" allowCancel:(!firstActivity)];
+    NSString *mss = [self inputBox:@"What are you working on?" allowCancel:(!firstActivity)];
     if (mss) {
         NSLog(@"New Activity: %@\n", mss);
         currentTask = mss;
@@ -452,6 +486,6 @@ NSString *prefix = @"";
 
 - (IBAction)showStatistics:(id)sender {
     // Does not use openURL to force opening with Chrome, because UI is untested on other browsers (TODO: Change this)
-    [[NSWorkspace sharedWorkspace] openFile:visualizationFile withApplication:@"Google Chrome.app"];
+    [[NSWorkspace sharedWorkspace] openFile:redirFile withApplication:@"Google Chrome.app"];
 }
 @end
