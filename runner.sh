@@ -2,9 +2,10 @@
 
 if [ "$#" -eq 0 ]; then PORT=8008; else PORT=$1; fi
 
-mkdir -p "$HOME/Documents/Productivity Helper"
+mkdir -p "$HOME/Documents/Productivity Helper/scripts"
 cd "$HOME/Documents/Productivity Helper"
-exit
+rm Stats.html # Remove the old file (once the UI is stable, this can be omitted)
+exit # Starting the HTTP server seems to be very unreliable, often crashing or failing to start properly
 pyversion=$(python -c 'import sys; print(sys.version_info[0])')
 if [[ $pyversion -eq 3 ]]; then
   httpstr=http.server

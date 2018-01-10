@@ -28,6 +28,7 @@ NSString *filePath;
 NSString *jsFilePath;
 NSString *redirFile;
 NSString *visualizationFile;
+NSString *d3File;
 NSString *currentTask;
 NSString *setupScriptPath;
 NSString *killServerPath;
@@ -82,6 +83,7 @@ int numDays = 0;
         filePath = [documentsDirPath stringByAppendingPathComponent:fileName];
         redirFile = [documentsDirPath stringByAppendingPathComponent:redirName];
         visualizationFile = [documentsDirPath stringByAppendingPathComponent:visualizationName];
+        d3File = [documentsDirPath stringByAppendingPathComponent:@"Productivity Helper/scripts/d3.v4.min.js"];
         fileManager = [NSFileManager defaultManager];
     }
 }
@@ -208,6 +210,9 @@ int numDays = 0;
     NSString *visualizationPath = [bundle pathForResource:@"Stats" ofType:@"html"];
     NSLog(@"Path to canonical visualization file: %@", visualizationPath);
     [fileManager copyItemAtPath:visualizationPath toPath:visualizationFile error:nil];
+    NSString *d3Path = [bundle pathForResource:@"d3.v4.min" ofType:@"js"];
+    NSLog(@"Path to d3 file: %@", d3Path);
+    [fileManager copyItemAtPath:d3Path toPath:d3File error:nil];
 }
 
 // see https://github.com/electron/electron/issues/3038
