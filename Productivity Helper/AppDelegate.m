@@ -209,6 +209,8 @@ int numDays = 0;
     [AppDelegate genRedirFile];
     NSString *visualizationPath = [bundle pathForResource:@"Stats" ofType:@"html"];
     NSLog(@"Path to canonical visualization file: %@", visualizationPath);
+    NSLog(@"Destination to copy visualization file: %@", visualizationFile);
+    [fileManager removeItemAtPath:visualizationFile error:nil]; //  Remove the old file (once the UI is stable, this can be omitted)
     [fileManager copyItemAtPath:visualizationPath toPath:visualizationFile error:nil];
     NSString *d3Path = [bundle pathForResource:@"d3.v4.min" ofType:@"js"];
     NSLog(@"Path to d3 file: %@", d3Path);
