@@ -12,6 +12,8 @@
 
 @implementation AppDelegate
 
+uint PORT = 8008;
+
 bool slacking = false;
 bool breaking = false;
 bool working = false;
@@ -19,11 +21,13 @@ bool showSecondsLast = true;
 NSString *fileName = @"Productivity Helper/Statistics.txt";
 NSString *jsFileName = @"Productivity Helper/Statistics.js";
 NSString *visualizationName = @"Productivity Helper/Stats_redir.html";
+NSString *portString;
 
 NSString *filePath;
 NSString *jsFilePath;
 NSString *visualizationFile;
 NSString *currentTask;
+NSString *killServerPath;
 NSFileManager *fileManager;
 NSDateFormatter *dateFormatter;
 NSDateFormatter *outputFormatter;
@@ -149,6 +153,7 @@ int numDays = 0;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+    portString = [NSString stringWithFormat:@"%u", PORT];
     [_timeText setAlignment:NSCenterTextAlignment];
     [_timeText setPreferredMaxLayoutWidth:0];
     [_overallText setAlignment:NSCenterTextAlignment];
@@ -184,6 +189,9 @@ int numDays = 0;
     NSWindow *mainWindow = [[[NSApplication sharedApplication] windows] objectAtIndex:0]; // thanks to https://stackoverflow.com/questions/7620251/how-to-get-main-window-app-delegate-from-other-class-subclass-of-nsviewcontro
     [mainWindow setLevel:NSFloatingWindowLevel];
     [[mainWindow standardWindowButton:NSWindowCloseButton] setEnabled:NO];
+    NSBundle *main = [NSBundle mainBundle];
+    killServerPath = [main pathForResource:@"kill_server" ofType:@"sh"];
+    NSLog(killServerPath);
 }
 
 // see https://github.com/electron/electron/issues/3038
@@ -193,8 +201,18 @@ int numDays = 0;
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender {
     [AppDelegate stopWorking];
+    [AppDelegate stopServer];
     NSLog(@"Application exited");
     return NSTerminateNow;
+}
+
++ (void)stopServer {
+    NSTask *task = [[NSTask alloc] init];
+    [task setLaunchPath:@"/bin/bash"];
+    [task setArguments:[NSArray arrayWithObjects:killServerPath, portString, nil]];
+    [task setStandardOutput:[NSPipe pipe]];
+    [task launch];
+    NSLog (@"Server %@ killed", portString);
 }
 
 + (NSString *)getTimeString {

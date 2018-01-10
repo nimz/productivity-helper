@@ -16,6 +16,7 @@
 		09ADB7541BE0B21E0084A3DA /* Productivity_HelperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 09ADB7531BE0B21E0084A3DA /* Productivity_HelperTests.m */; };
 		09ADB75F1BE0B21E0084A3DA /* Productivity_HelperUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 09ADB75E1BE0B21E0084A3DA /* Productivity_HelperUITests.m */; };
 		09B429941CA3F9DC00934711 /* Stats.html in Resources */ = {isa = PBXBuildFile; fileRef = 09B429931CA3F9DC00934711 /* Stats.html */; };
+		09E6864A20060FF10036814A /* kill_server.sh in Resources */ = {isa = PBXBuildFile; fileRef = 09E6864920060FF10036814A /* kill_server.sh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,7 @@
 		09ADB75E1BE0B21E0084A3DA /* Productivity_HelperUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Productivity_HelperUITests.m; sourceTree = "<group>"; };
 		09ADB7601BE0B21E0084A3DA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		09B429931CA3F9DC00934711 /* Stats.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = Stats.html; sourceTree = "<group>"; };
+		09E6864920060FF10036814A /* kill_server.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = kill_server.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +85,7 @@
 		09ADB7331BE0B21E0084A3DA = {
 			isa = PBXGroup;
 			children = (
+				09E6864920060FF10036814A /* kill_server.sh */,
 				09ADB73E1BE0B21E0084A3DA /* Productivity Helper */,
 				09ADB7521BE0B21E0084A3DA /* Productivity HelperTests */,
 				09ADB75D1BE0B21E0084A3DA /* Productivity HelperUITests */,
@@ -248,6 +251,7 @@
 			files = (
 				09B429941CA3F9DC00934711 /* Stats.html in Resources */,
 				09ADB7461BE0B21E0084A3DA /* Assets.xcassets in Resources */,
+				09E6864A20060FF10036814A /* kill_server.sh in Resources */,
 				092B6AED1CA27F710062A54B /* Preferences.xib in Resources */,
 				09ADB7491BE0B21E0084A3DA /* MainMenu.xib in Resources */,
 			);
