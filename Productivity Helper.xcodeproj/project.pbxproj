@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		092B6AED1CA27F710062A54B /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 092B6AEC1CA27F710062A54B /* Preferences.xib */; };
 		092B6AF01CA27F8A0062A54B /* PreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 092B6AEF1CA27F8A0062A54B /* PreferencesController.m */; };
+		097B8EAE2006B5A00059E938 /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = 097B8EAD2006B5A00059E938 /* main.js */; };
 		09903A902006A9310064D487 /* d3.v4.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 09903A8F2006A9310064D487 /* d3.v4.min.js */; };
 		09ADB7411BE0B21E0084A3DA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 09ADB7401BE0B21E0084A3DA /* AppDelegate.m */; };
 		09ADB7441BE0B21E0084A3DA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 09ADB7431BE0B21E0084A3DA /* main.m */; };
@@ -42,6 +43,7 @@
 		092B6AEC1CA27F710062A54B /* Preferences.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Preferences.xib; sourceTree = "<group>"; };
 		092B6AEE1CA27F8A0062A54B /* PreferencesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferencesController.h; sourceTree = "<group>"; };
 		092B6AEF1CA27F8A0062A54B /* PreferencesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferencesController.m; sourceTree = "<group>"; };
+		097B8EAD2006B5A00059E938 /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
 		09903A8F2006A9310064D487 /* d3.v4.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = d3.v4.min.js; sourceTree = "<group>"; };
 		09ADB73C1BE0B21E0084A3DA /* Productivity Helper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Productivity Helper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		09ADB73F1BE0B21E0084A3DA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -92,6 +94,7 @@
 				09E6864920060FF10036814A /* kill_server.sh */,
 				09E6864B200616E40036814A /* runner.sh */,
 				09E6864D20061E4F0036814A /* Stats.html */,
+				097B8EAD2006B5A00059E938 /* main.js */,
 				09903A8F2006A9310064D487 /* d3.v4.min.js */,
 				09ADB73E1BE0B21E0084A3DA /* Productivity Helper */,
 				09ADB7521BE0B21E0084A3DA /* Productivity HelperTests */,
@@ -262,6 +265,7 @@
 				092B6AED1CA27F710062A54B /* Preferences.xib in Resources */,
 				09E6864E20061E4F0036814A /* Stats.html in Resources */,
 				09ADB7491BE0B21E0084A3DA /* MainMenu.xib in Resources */,
+				097B8EAE2006B5A00059E938 /* main.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

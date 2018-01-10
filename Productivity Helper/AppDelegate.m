@@ -28,6 +28,7 @@ NSString *filePath;
 NSString *jsFilePath;
 NSString *redirFile;
 NSString *visualizationFile;
+NSString *mainJSFile;
 NSString *d3File;
 NSString *currentTask;
 NSString *setupScriptPath;
@@ -84,6 +85,7 @@ int numDays = 0;
         redirFile = [documentsDirPath stringByAppendingPathComponent:redirName];
         visualizationFile = [documentsDirPath stringByAppendingPathComponent:visualizationName];
         d3File = [documentsDirPath stringByAppendingPathComponent:@"Productivity Helper/scripts/d3.v4.min.js"];
+        mainJSFile = [documentsDirPath stringByAppendingPathComponent:@"Productivity Helper/scripts/main.js"];
         fileManager = [NSFileManager defaultManager];
     }
 }
@@ -208,13 +210,15 @@ int numDays = 0;
     [_startButton setEnabled:YES];
     [AppDelegate genRedirFile];
     NSString *visualizationPath = [bundle pathForResource:@"Stats" ofType:@"html"];
-    NSLog(@"Path to canonical visualization file: %@", visualizationPath);
-    NSLog(@"Destination to copy visualization file: %@", visualizationFile);
+    NSLog(@"Copying %@ to %@", visualizationPath, visualizationFile);
     [fileManager removeItemAtPath:visualizationFile error:nil]; //  Remove the old file (once the UI is stable, this can be omitted)
     [fileManager copyItemAtPath:visualizationPath toPath:visualizationFile error:nil];
     NSString *d3Path = [bundle pathForResource:@"d3.v4.min" ofType:@"js"];
-    NSLog(@"Path to d3 file: %@", d3Path);
+    NSLog(@"Copying %@ to %@", d3Path, d3File);
     [fileManager copyItemAtPath:d3Path toPath:d3File error:nil];
+    NSString *mainJSPath = [bundle pathForResource:@"main" ofType:@"js"];
+    NSLog(@"Copying %@ to %@", mainJSPath, mainJSFile);
+    [fileManager copyItemAtPath:mainJSPath toPath:mainJSFile error:nil];
 }
 
 // see https://github.com/electron/electron/issues/3038
