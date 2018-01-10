@@ -1,8 +1,6 @@
 #!/bin/bash
 
-# Change REPO_PARENT to the directory in which the repository was cloned
-# Copy this script to the '~/Documents/Productivity Helper' directory and run it in the background,
-# in order to view visualizations
-REPO_PARENT="$HOME/Documents/github_repos/Productivity Helper/"
-cp "$REPO_PARENT/Productivity Helper/Stats.html" .
+mkdir -p "$HOME/Documents/Productivity Helper"
+cp runner.sh "Productivity Helper/Stats.html" "$HOME/Documents/Productivity Helper/"
+cd "$HOME/Documents/Productivity Helper"
 python -m http.server 8008
