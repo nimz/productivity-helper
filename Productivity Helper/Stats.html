@@ -92,8 +92,9 @@ d3.text("Statistics.txt?" + Math.floor(Math.random() * 9999), function(d) {
   var sessions = [], curSessData = [];
   var curSessDict = {};
   var curStart, curEnd;
-  while (index++ < lines.length - 2) { // skip last line (newline)
+  while (index++ < lines.length - 1) { // Skip first line
     var line = lines[index];
+    if (line.trim() === "") continue;
     var splitLine = line.split(" ");
     var firstWord = splitLine[0];
     if (firstWord === "Session") {

@@ -18,7 +18,7 @@ bool working = false;
 bool showSecondsLast = true;
 NSString *fileName = @"Productivity Helper/Statistics.txt";
 NSString *jsFileName = @"Productivity Helper/Statistics.js";
-NSString *visualizationName = @"Productivity Helper/Stats.html";
+NSString *visualizationName = @"Productivity Helper/Stats_redir.html";
 
 NSString *filePath;
 NSString *jsFilePath;
@@ -433,6 +433,7 @@ NSString *prefix = @"";
 }
 
 - (IBAction)showStatistics:(id)sender {
+    // Does not use openURL to force opening with Chrome, because UI is untested on other browsers (TODO: Change this)
     [[NSWorkspace sharedWorkspace] openFile:visualizationFile withApplication:@"Google Chrome.app"];
 }
 @end
