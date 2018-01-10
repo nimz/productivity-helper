@@ -4,7 +4,7 @@ if [ "$#" -eq 0 ]; then PORT=8008; else PORT=$1; fi
 
 mkdir -p "$HOME/Documents/Productivity Helper"
 cd "$HOME/Documents/Productivity Helper"
-
+exit
 pyversion=$(python -c 'import sys; print(sys.version_info[0])')
 if [[ $pyversion -eq 3 ]]; then
   httpstr=http.server
