@@ -229,20 +229,13 @@ int numDays = 0;
 
 + (void)setupServer {
     NSPipe *pipe = [NSPipe pipe];
-    NSFileHandle *file = pipe.fileHandleForReading;
     NSTask *task = [[NSTask alloc] init];
     [task setLaunchPath:@"/bin/bash"];
     [task setArguments:[NSArray arrayWithObjects:setupScriptPath, portString, nil]];
     [task setStandardOutput:pipe];
     [task setStandardError:pipe];
     [task launch];
-    NSData *data = [file readDataToEndOfFile];
-    [file closeFile];
-    NSString *output = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    if ([output length] > 0)
-        NSLog(@"Setup script output: %@", output);
-    else
-        NSLog (@"Server %@ running", portString);
+    NSLog (@"Server running on port %@", portString);
 }
 
 + (void)stopServer {
@@ -251,7 +244,7 @@ int numDays = 0;
     [task setArguments:[NSArray arrayWithObjects:killServerPath, portString, nil]];
     [task setStandardOutput:[NSPipe pipe]];
     [task launch];
-    NSLog (@"Server %@ killed", portString);
+    NSLog (@"Server on port %@ killed", portString);
 }
 
 + (NSString *)getTimeString {
