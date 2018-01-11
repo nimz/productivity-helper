@@ -19,10 +19,14 @@
 @property (weak) IBOutlet NSButton *slackButton;
 @property (weak) IBOutlet NSTextField *timeText;
 @property (weak) IBOutlet NSTextField *overallText;
+@property (weak) IBOutlet NSMenuItem *startMenuItem;
+@property (weak) IBOutlet NSMenuItem *changeMenuItem;
+@property (weak) IBOutlet NSMenuItem *slackMenuItem;
+@property (weak) IBOutlet NSMenuItem *breakMenuItem;
 - (IBAction)showStatistics:(id)sender;
 - (IBAction)startSession:(id)sender;
-- (IBAction)startBreak:(id)sender;
 - (IBAction)startSlack:(id)sender;
+- (IBAction)startBreak:(id)sender;
 - (IBAction)openPreferences:(id)sender;
 - (IBAction)changeActivity:(id)sender;
 

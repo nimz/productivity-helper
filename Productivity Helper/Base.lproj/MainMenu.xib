@@ -15,10 +15,14 @@
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate">
             <connections>
                 <outlet property="breakButton" destination="CvW-tr-OuU" id="aiM-uj-cCA"/>
+                <outlet property="breakMenuItem" destination="po0-C9-5Mx" id="Ld2-iw-BHd"/>
                 <outlet property="changeButton" destination="3HE-V9-Xgp" id="zfr-zA-wpu"/>
+                <outlet property="changeMenuItem" destination="Ked-tx-XzP" id="JdJ-2S-9TE"/>
                 <outlet property="overallText" destination="bZ7-Vy-dxV" id="eFb-gm-nme"/>
                 <outlet property="slackButton" destination="9Uf-bE-7b9" id="PsK-1J-EJW"/>
+                <outlet property="slackMenuItem" destination="Ab7-xb-9DZ" id="H1A-4g-gpF"/>
                 <outlet property="startButton" destination="UAl-e2-nNt" id="e8p-h5-hsj"/>
+                <outlet property="startMenuItem" destination="4lA-0S-Lhs" id="DdT-HX-rac"/>
                 <outlet property="timeText" destination="LqA-Gn-bDt" id="eYR-UR-DaI"/>
             </connections>
         </customObject>
@@ -94,6 +98,33 @@
                             <menuItem title="Close" keyEquivalent="w" id="DVo-aG-piG">
                                 <connections>
                                     <action selector="performClose:" target="-1" id="HmO-Ls-i7Q"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Controls" id="RQt-I1-cPI">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Controls" autoenablesItems="NO" id="cKd-xh-8Ic">
+                        <items>
+                            <menuItem title="Start/Stop Session" keyEquivalent="0" id="4lA-0S-Lhs">
+                                <connections>
+                                    <action selector="startSession:" target="Voe-Tx-rLC" id="ah1-LQ-yBU"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Change Activity" keyEquivalent="1" id="Ked-tx-XzP">
+                                <connections>
+                                    <action selector="changeActivity:" target="Voe-Tx-rLC" id="j9G-tY-27K"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Toggle Slacking" keyEquivalent="2" id="Ab7-xb-9DZ">
+                                <connections>
+                                    <action selector="startSlack:" target="Voe-Tx-rLC" id="1Ov-hq-4FF"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Toggle Breaking" keyEquivalent="3" id="po0-C9-5Mx">
+                                <connections>
+                                    <action selector="startBreak:" target="Voe-Tx-rLC" id="mQ5-hG-0cK"/>
                                 </connections>
                             </menuItem>
                         </items>
@@ -237,7 +268,7 @@
                     <constraint firstItem="bZ7-Vy-dxV" firstAttribute="centerX" secondItem="EiT-Mj-1SZ" secondAttribute="centerX" id="yTo-ib-eez"/>
                 </constraints>
             </view>
-            <point key="canvasLocation" x="455" y="494.5"/>
+            <point key="canvasLocation" x="671" y="628.5"/>
         </window>
     </objects>
 </document>

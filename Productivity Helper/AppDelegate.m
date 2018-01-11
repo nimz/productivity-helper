@@ -155,10 +155,14 @@ int numDays = 0;
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+    [_startMenuItem setEnabled:NO];
+    [_changeMenuItem setEnabled:NO];
+    [_slackMenuItem setEnabled:NO];
+    [_breakMenuItem setEnabled:NO];
+    [_startButton setEnabled:NO];
     [_slackButton setEnabled:NO];
     [_breakButton setEnabled:NO];
     [_changeButton setEnabled:NO];
-    [_startButton setEnabled:NO];
     [_timeText setAlignment:NSCenterTextAlignment];
     [_timeText setPreferredMaxLayoutWidth:0];
     [_overallText setAlignment:NSCenterTextAlignment];
@@ -197,6 +201,7 @@ int numDays = 0;
     [timerFormatter setDateFormat:@"HH:mm:ss"];
     [timerFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0.0]];
     [_startButton setEnabled:YES];
+    [_startMenuItem setEnabled:YES];
     [AppDelegate genRedirFile];
     NSString *visualizationPath = [bundle pathForResource:@"Stats" ofType:@"html"];
     NSLog(@"Copying %@ to %@", visualizationPath, visualizationFile);
@@ -327,6 +332,9 @@ NSString *prefix = @"";
     if (working) {
         if (![self stopWorking])
             return;
+        [_slackMenuItem setEnabled:NO];
+        [_breakMenuItem setEnabled:NO];
+        [_changeMenuItem setEnabled:NO];
         [AppDelegate resetButtonStyle:_slackButton];
         [AppDelegate resetButtonStyle:_breakButton];
         [_breakButton setTitle:@"Go On Break"];
@@ -350,6 +358,9 @@ NSString *prefix = @"";
         [_slackButton setEnabled:YES];
         [_breakButton setEnabled:YES];
         [_changeButton setEnabled:YES];
+        [_slackMenuItem setEnabled:YES];
+        [_breakMenuItem setEnabled:YES];
+        [_changeMenuItem setEnabled:YES];
         [_startButton setTitle:@"Stop Work Session"];
         NSDate *date = [NSDate date];
         NSString *str = [NSString stringWithFormat:@"Session %d, %@\n", numDays, [dateFormatter stringFromDate:date]];
@@ -386,31 +397,6 @@ NSString *prefix = @"";
     [button setWantsLayer:false];
 }
 
-- (IBAction)startBreak:(id)sender {
-    if (breaking) {
-        [self stopBreaking];
-        prefix = [currentTask stringByAppendingString:@": "];
-    }
-    else {
-        breaking = true;
-        if (slacking) {
-            [self stopSlacking];
-        }
-        else {
-            [AppDelegate stopTask];
-        }
-        [_breakButton setTitle:@"End Break"];
-        if ([prefController doHighlight]) {
-            [AppDelegate colorizeButton:_breakButton withColor:[NSColor yellowColor]];
-        }
-        NSString *start = [AppDelegate getTimeString];
-        NSString *str = [NSString stringWithFormat:@"Break, %@", start];
-        [AppDelegate writeString:str];
-        prefix = @"Break Time: ";
-    }
-    [self resetTimer];
-}
-
 - (IBAction)startSlack:(id)sender {
     if (slacking) {
         [self stopSlacking];
@@ -433,6 +419,31 @@ NSString *prefix = @"";
         NSString *str = [NSString stringWithFormat:@"Wasted, %@", start];
         [AppDelegate writeString:str];
         prefix = @"Time Wasted: ";
+    }
+    [self resetTimer];
+}
+
+- (IBAction)startBreak:(id)sender {
+    if (breaking) {
+        [self stopBreaking];
+        prefix = [currentTask stringByAppendingString:@": "];
+    }
+    else {
+        breaking = true;
+        if (slacking) {
+            [self stopSlacking];
+        }
+        else {
+            [AppDelegate stopTask];
+        }
+        [_breakButton setTitle:@"End Break"];
+        if ([prefController doHighlight]) {
+            [AppDelegate colorizeButton:_breakButton withColor:[NSColor yellowColor]];
+        }
+        NSString *start = [AppDelegate getTimeString];
+        NSString *str = [NSString stringWithFormat:@"Break, %@", start];
+        [AppDelegate writeString:str];
+        prefix = @"Break Time: ";
     }
     [self resetTimer];
 }
