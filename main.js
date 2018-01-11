@@ -142,7 +142,14 @@ function rgbToHex(d) {
   var r = d['r'], g = d['g'], b = d['b'];
   return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }
-var lf = 1.2;
+var lf = 1.2, la = 5;
+function hoverizeColor(c) {
+  var cur_rgb = hexToRgb(c);
+  for (var key in cur_rgb) {
+    cur_rgb[key] = Math.min(255, Math.round(cur_rgb[key] * lf) + la);
+  }
+  return rgbToHex(cur_rgb);
+}
 
 // Thanks to https://stackoverflow.com/a/46774740/2258552
 const toTitleCase = (str) => {
@@ -270,12 +277,26 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
                     var horz = w * 4/5;
                     return 'translate(' + horz + ',' + vert + ')';
                   });
+  var textOffsetX = 4, textOffsetY = 5; // adding textOffsetY = 5 seems to center text vertically w.r.t. legend square
   legend.append('rect')
         .attr('width', legendSqSize)
         .attr('height', legendSqSize)
         .style('fill', function(d,i){ return colors[i]; })
-        .style('stroke', function(d,i){ return colors[i]; });
-  var textOffsetX = 4, textOffsetY = 5; // adding textOffsetY = 5 seems to center text vertically w.r.t. legend square
+        .style('stroke', function(d,i){ return colors[i]; })
+        .style('stroke-width', 1)
+        .on("mouseover", function(d,i){
+          d3.select(this).style('fill', hoverizeColor(colors[i]));
+          d3.select(this.parentNode).append("text")
+            .attr("fill", "black")
+            .attr("style", "pointer-events: none; user-select: none;")
+            .attr("class", "hovertext")
+            .text(function(d){ return "placeholder"; })
+            .attr("transform", function(d){ return "translate(-" + (this.getComputedTextLength() + textOffsetX) + ", " + (legendSqSize / 2 + textOffsetY) + ")" });
+        })
+        .on("mouseout", function(d,i){
+          d3.select(this.parentNode).selectAll(".hovertext").remove();
+          d3.select(this).style("fill", colors[i]);
+        });
   legend.append('text')
         .attr('x', legendSqSize + textOffsetX)
         .attr('y', legendSqSize / 2 + textOffsetY)
@@ -289,11 +310,7 @@ function setMouseoverText() {
   g.selectAll(".arc").on("mouseover", function(d,i){
     this.parentNode.appendChild(this); // move to end, so that text does not get obscured (due to order in which SVG elements render)
     var arc_index = parseInt(d3.select(this).attr("id").substring(4));
-    var cur_rgb = hexToRgb(colors[arc_index]);
-    for (var key in cur_rgb) {
-      cur_rgb[key] = Math.min(255, Math.round(cur_rgb[key] * lf));
-    }
-    d3.select(this).selectAll("path").attr("fill", rgbToHex(cur_rgb));
+    d3.select(this).selectAll("path").attr("fill", hoverizeColor(colors[i]));
     d3.select(this).append("text")
                    .attr("transform", function(d){
                       var cent = label.centroid(d);
