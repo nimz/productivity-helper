@@ -57,9 +57,9 @@ function currentTimeStr() {
 
 function startTime() {
   document.getElementById('time').innerHTML = currentTimeStr();
-  t = setTimeout(function() {
+  /*setTimeout(function() {
       startTime()
-  }, 250);
+  }, 250);*/ // right now, we only load the data once!
 }
 startTime();
 
@@ -240,13 +240,14 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
              .data(pie(workData))
              .enter()
              .append("g")
-             .attr("class", "arc");
+             .attr("class", "arc")
+             .attr("id", function(d,i){ return "arc_" + i; });
 
   var path = d3.arc().outerRadius(radius).innerRadius(innerRadius);
   var label = d3.arc().outerRadius(radius*1.5).innerRadius(radius*1.5);
   arc.append("path")
      .attr("d", path)
-     .attr("fill", function(d,i) { return colors[i]; });
+     .attr("fill", function(d,i){ return colors[i]; });
 
   setMouseoverText();
   g.selectAll(".arc").on("mouseout", function(d,i){
@@ -261,7 +262,7 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
                   .enter()
                   .append('g')
                   .attr('class', 'legend')
-                  .attr('transform', function(d, i) {
+                  .attr('transform', function(d,i){
                     var height = legendSqSize + legendSpacing;
                     var offset = height * legendSqSize/2;
                     var vert = i * height - offset + h/2;
@@ -271,21 +272,22 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
   legend.append('rect')
         .attr('width', legendSqSize)
         .attr('height', legendSqSize)
-        .style('fill', function(d,i){return colors[i];})
-        .style('stroke', function(d,i){return colors[i];});
+        .style('fill', function(d,i){ return colors[i]; })
+        .style('stroke', function(d,i){ return colors[i]; });
   legend.append('text')
         .attr('x', legendSqSize + legendSpacing)
         .attr('y', legendSqSize - legendSpacing)
         .attr("fill", "black")
-        .text(function(d) { return d; });
+        .text(function(d){ return d; });
 }
 
 function setMouseoverText() {
   var g = svg.selectAll("g");
   var label = d3.arc().outerRadius(radius*1.5).innerRadius(radius*1.5);
   g.selectAll(".arc").on("mouseover", function(d,i){
-    this.parentNode.appendChild(this); // move to end, so that text does not get obscured
-    var cur_rgb = hexToRgb(colors[i]);
+    this.parentNode.appendChild(this); // move to end, so that text does not get obscured (due to order in which SVG elements render)
+    var arc_index = parseInt(d3.select(this).attr("id").substring(4));
+    var cur_rgb = hexToRgb(colors[arc_index]);
     for (var key in cur_rgb) {
       cur_rgb[key] = Math.min(255, Math.round(cur_rgb[key] * lf));
     }
@@ -298,6 +300,6 @@ function setMouseoverText() {
                       return "translate(" + cent + ")"; })
                    .attr("fill", "black")
                    .attr("style", "pointer-events: none; user-select: none;")
-                   .text(function(d) { return (showSecsOnly ? d.data + "s" : timeString(d.data, true)) + " (" + (d.data/sessLength*100).toFixed(1) + "%)"; });
+                   .text(function(d){ return (showSecsOnly ? d.data + "s" : timeString(d.data, true)) + " (" + (d.data/sessLength*100).toFixed(1) + "%)"; });
   });
 }
