@@ -1,4 +1,5 @@
 var w = 800, h = 500;
+var radius = h / 5, innerRadius = radius / 2;
 var svg_div = d3.select("body")
                 .append("div")
                 .attr("align", "center")
@@ -26,10 +27,16 @@ function validateDate(i) {
   }
 }
 
-var showTasks = false;
+var showTasks = true;
 function toggleMode() {
   showTasks = !showTasks;
   processData();
+}
+
+var showSecsOnly = false;
+function toggleShow() {
+  showSecsOnly = !showSecsOnly;
+  setMouseoverText();
 }
 
 function leadingZero(i) {
@@ -173,9 +180,10 @@ const toTitleCase = (str) => {
   return words.join(' ');
 }
 
-function timeString(num_secs) {
+var names_s = ["d", "h", "m", "s"], names_l = [" Day", " Hour", " Minute", " Second"];
+function timeString(num_secs, condensed=false) {
   var nums = [0, 0, 0, 0];
-  var names = ["Day", "Hour", "Minute", "Second"];
+  var names = condensed ? names_s : names_l;
   nums[0] = Math.floor(num_secs / 86400);
   nums[1] = Math.floor((num_secs % 86400) / 3600);
   nums[2] = Math.floor((num_secs % 3600) / 60);
@@ -184,15 +192,15 @@ function timeString(num_secs) {
   for (var i = 0; i < 4; i++) {
     if (nums[i] != 0) {
       if (retval !== "") retval += ", ";
-      retval += nums[i] + " " + names[i];
-      if (nums[i] > 1) retval += "s";
+      retval += nums[i] + names[i];
+      if (!condensed && nums[i] > 1) retval += "s";
     }
   }
-  if (retval === "") retval = "0 Seconds";
+  if (retval === "") retval = condensed ? "0s" : "0 Seconds";
   return retval;
 }
 
-var workInfo = {}, workTotals1 = [0, 0, 0], workTotals2 = [], tasks = [], sessLength = 0, loaded = false;
+var workInfo = {}, workTotals1 = [0, 0, 0], workTotals2 = [], tasks = [], sessLength = 0, loaded = false, colors;
 function processData() { // TODO: Put d3 visualizations in separate file for faster loading (load basic ones first?)
   if (!loaded) {
     for (var i = 0; i < fulldata.length; i++) {
@@ -223,9 +231,8 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
   }
 
   var workData = showTasks ? workTotals2 : workTotals1;
-  var colors = showTasks ? d3.schemeCategory20 : d3.schemeCategory10;
+  colors = showTasks ? d3.schemeCategory20 : d3.schemeCategory10;
   var categories = showTasks ? tasks : ["Work Time", "Break Time", "Wasted Time"];
-  var radius = h / 5, innerRadius = radius / 2;
   svg.selectAll("g").remove();
   var g = svg.append("g").attr("transform", "translate(" + w/2 + ", " + h/2 + ")");
   var pie = d3.pie().sort(null);
@@ -241,22 +248,7 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
      .attr("d", path)
      .attr("fill", function(d,i) { return colors[i]; });
 
-  g.selectAll(".arc").on("mouseover", function(d,i){
-    d3.select(this).append("text")
-                   .attr("transform", function(d){
-                      var cent = label.centroid(d);
-                      cent[0] -= 15;
-                      cent[1] -= 5;
-                      return "translate(" + cent + ")"; })
-                   .attr("fill", "black")
-                   .attr("style", "pointer-events: none; user-select: none;")
-                   .text(function(d) { return d.data + "s (" + (d.data/sessLength*100).toFixed(1) + "%)"; });
-     var cur_rgb = hexToRgb(colors[i]);
-     for (var key in cur_rgb) {
-       cur_rgb[key] = Math.min(255, Math.round(cur_rgb[key] * lf));
-     }
-     d3.select(this).selectAll("path").attr("fill", rgbToHex(cur_rgb));
-  });
+  setMouseoverText();
   g.selectAll(".arc").on("mouseout", function(d,i){
     d3.select(this)
       .select("text")
@@ -286,4 +278,26 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
         .attr('y', legendSqSize - legendSpacing)
         .attr("fill", "black")
         .text(function(d) { return d; });
+}
+
+function setMouseoverText() {
+  var g = svg.selectAll("g");
+  var label = d3.arc().outerRadius(radius*1.5).innerRadius(radius*1.5);
+  g.selectAll(".arc").on("mouseover", function(d,i){
+    this.parentNode.appendChild(this); // move to end, so that text does not get obscured
+    var cur_rgb = hexToRgb(colors[i]);
+    for (var key in cur_rgb) {
+      cur_rgb[key] = Math.min(255, Math.round(cur_rgb[key] * lf));
+    }
+    d3.select(this).selectAll("path").attr("fill", rgbToHex(cur_rgb));
+    d3.select(this).append("text")
+                   .attr("transform", function(d){
+                      var cent = label.centroid(d);
+                      cent[0] -= 15;
+                      cent[1] -= 5;
+                      return "translate(" + cent + ")"; })
+                   .attr("fill", "black")
+                   .attr("style", "pointer-events: none; user-select: none;")
+                   .text(function(d) { return (showSecsOnly ? d.data + "s" : timeString(d.data, true)) + " (" + (d.data/sessLength*100).toFixed(1) + "%)"; });
+  });
 }

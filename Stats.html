@@ -22,8 +22,11 @@
    To:   <input type="text" id="to"   value="mm/dd/yy" onclick="clearInput(1)" onchange="validateDate(1)" /></p>
 
 <div>
-  <input type="checkbox" id="showTasks" value="showtasks" onclick="toggleMode()">
+  <input type="checkbox" id="showTasks" value="showtasks" onclick="toggleMode()" checked>
   <label for="showTasks" style="user-select: none;">Show breakdown by task</label>
+
+  <input type="checkbox" id="showSecs" value="showsecs" onclick="toggleShow()">
+  <label for="showSecs" style="user-select: none;">Show times in seconds only</label>
 </div>
 
 <script src="scripts/d3.v4.min.js"></script>
