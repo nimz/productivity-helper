@@ -1,8 +1,9 @@
-var w = 800, h = 500;
+var w = 1000, h = 500;
 var radius = h / 5, innerRadius = radius / 2;
 var svg_div = d3.select("body")
                 .append("div")
                 .attr("align", "center")
+                .attr("style", "overflow-y: auto; overflow-x: auto;");
 var svg = svg_div.append("svg")
                  .attr("height", h)
                  .attr("width", w);
@@ -234,7 +235,7 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
   colors = showTasks ? d3.schemeCategory20 : d3.schemeCategory10;
   var categories = showTasks ? tasks : ["Work Time", "Break Time", "Wasted Time"];
   svg.selectAll("g").remove();
-  var g = svg.append("g").attr("transform", "translate(" + w/2 + ", " + h/2 + ")");
+  var g = svg.append("g").attr("transform", "translate(" + w/4 + ", " + h/2 + ")");
   var pie = d3.pie().sort(null);
   var arc = g.selectAll(".arc")
              .data(pie(workData))
@@ -256,7 +257,7 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
       .remove();
     d3.select(this).selectAll("path").attr("fill", colors[i]);
   });
-  var legendSqSize = 18, legendSpacing = 4;
+  var legendSqSize = 20, legendSpacing = 4;
   var legend = svg.selectAll('.legend')
                   .data(categories)
                   .enter()
@@ -264,9 +265,9 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
                   .attr('class', 'legend')
                   .attr('transform', function(d,i){
                     var height = legendSqSize + legendSpacing;
-                    var offset = height * legendSqSize/2;
+                    var offset = categories.length * height / 2;
                     var vert = i * height - offset + h/2;
-                    var horz = w * 3/4;
+                    var horz = w * 4/5;
                     return 'translate(' + horz + ',' + vert + ')';
                   });
   legend.append('rect')
@@ -274,9 +275,10 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
         .attr('height', legendSqSize)
         .style('fill', function(d,i){ return colors[i]; })
         .style('stroke', function(d,i){ return colors[i]; });
+  var textOffsetX = 4, textOffsetY = 5; // adding textOffsetY = 5 seems to center text vertically w.r.t. legend square
   legend.append('text')
-        .attr('x', legendSqSize + legendSpacing)
-        .attr('y', legendSqSize - legendSpacing)
+        .attr('x', legendSqSize + textOffsetX)
+        .attr('y', legendSqSize / 2 + textOffsetY)
         .attr("fill", "black")
         .text(function(d){ return d; });
 }
