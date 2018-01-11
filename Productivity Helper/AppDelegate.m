@@ -14,32 +14,22 @@
 
 uint PORT = 8008;
 
-bool slacking = false;
-bool breaking = false;
-bool working = false;
+bool slacking = false, breaking = false, working = false;
 bool showSecondsLast = true;
-NSString *fileName = @"Productivity Helper/Statistics.txt";
-NSString *jsFileName = @"Productivity Helper/Statistics.js";
-NSString *redirName = @"Productivity Helper/Stats_redir.html";
-NSString *visualizationName = @"Productivity Helper/Stats.html";
-NSString *portString;
 
-NSString *filePath;
-NSString *jsFilePath;
-NSString *redirFile;
-NSString *visualizationFile;
-NSString *mainJSFile;
-NSString *d3File;
-NSString *currentTask;
+NSString *basedir = @"Productivity Helper/";
+NSString *documentsDir, *statsFile, *jsFile, *redirFile, *visualizationFile,
+         *mainJSFile, *d3File, *iconFile;
+NSString *portString;
 NSString *setupScriptPath;
 NSString *killServerPath;
-NSFileManager *fileManager;
-NSDateFormatter *dateFormatter;
-NSDateFormatter *outputFormatter;
-NSDateFormatter *timerFormatter;
+NSString *currentTask;
 
-NSDate *timerStart, *sessionStart;
+NSFileManager *fileManager;
+
 NSTimer *timer;
+NSDate *timerStart, *sessionStart;
+NSDateFormatter *dateFormatter, *outputFormatter, *timerFormatter;
 
 int initialNumDays = 0;
 int prevNumDays = 0;
@@ -58,7 +48,7 @@ int numDays = 0;
 + (void)updateNumDays {
     NSString *numstr = [@(numDays) stringValue];
     if ([AppDelegate numDigits:numDays] > [AppDelegate numDigits:prevNumDays]) {
-        NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:filePath];
+        NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:statsFile];
         NSData *oldata = [fileHandler readDataToEndOfFile];
         NSString *str = [[NSString alloc] initWithData:oldata encoding:NSUTF8StringEncoding];
         NSRange range = [str rangeOfString:@"\n"];
@@ -70,23 +60,29 @@ int numDays = 0;
         [fileHandler closeFile];
     }
     else {
-        NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:filePath];
+        NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:statsFile];
         NSData *data = [numstr dataUsingEncoding:NSUTF8StringEncoding];
         [fileHandler writeData:data];
         [fileHandler closeFile];
     }
 }
 
-+ (void)initializeFiles {
++ (void)initializeDirectories {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     if (0 < [paths count]) {
-        NSString *documentsDirPath = [paths objectAtIndex:0];
-        filePath = [documentsDirPath stringByAppendingPathComponent:fileName];
-        redirFile = [documentsDirPath stringByAppendingPathComponent:redirName];
-        visualizationFile = [documentsDirPath stringByAppendingPathComponent:visualizationName];
-        d3File = [documentsDirPath stringByAppendingPathComponent:@"Productivity Helper/scripts/d3.v4.min.js"];
-        mainJSFile = [documentsDirPath stringByAppendingPathComponent:@"Productivity Helper/scripts/main.js"];
+        documentsDir = [[paths objectAtIndex:0] stringByAppendingString:@"/"];
+        statsFile = [NSString stringWithFormat:@"%@%@%@", documentsDir, basedir, @"Statistics.txt"];
+        jsFile = [NSString stringWithFormat:@"%@%@%@", documentsDir, basedir, @"Statistics.js"];
+        redirFile = [NSString stringWithFormat:@"%@%@%@", documentsDir, basedir, @"Stats_redir.html"];
+        visualizationFile = [NSString stringWithFormat:@"%@%@%@", documentsDir, basedir, @"Stats.html"];
+        mainJSFile = [NSString stringWithFormat:@"%@%@%@", documentsDir, basedir, @"scripts/main.js"];
+        d3File = [NSString stringWithFormat:@"%@%@%@", documentsDir, basedir, @"scripts/d3.v4.min.js"];
+        iconFile = [NSString stringWithFormat:@"%@%@%@", documentsDir, basedir, @"images/favicon.png"];
         fileManager = [NSFileManager defaultManager];
+        [fileManager createDirectoryAtPath:[documentsDir stringByAppendingString:@"Productivity Helper/images"]
+               withIntermediateDirectories:true attributes:nil error:nil];
+        [fileManager createDirectoryAtPath:[documentsDir stringByAppendingString:@"Productivity Helper/scripts"]
+               withIntermediateDirectories:true attributes:nil error:nil];
     }
 }
 
@@ -96,65 +92,58 @@ int numDays = 0;
  * From http://objective-c-functions.blogspot.com/2013/09/write-and-append-text-to-file.html
  */
 + (void)writeString:(NSString *)str {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    if (0 < [paths count]) {
-        NSString *documentsDirPath = [paths objectAtIndex:0];
-        filePath = [documentsDirPath stringByAppendingPathComponent:fileName];
-        jsFilePath = [documentsDirPath stringByAppendingPathComponent:jsFileName];
-        NSString *str2;
-        NSData *data;
+    NSString *outputStr;
+    NSData *data;
+    
+    if ([fileManager fileExistsAtPath:statsFile]) {
+        // Add the text at the end of the file.
+        NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:statsFile];
+        [fileHandler seekToEndOfFile];
+        data = [str dataUsingEncoding:NSUTF8StringEncoding];
+        [fileHandler writeData:data];
+        [fileHandler closeFile];
+    } else {
+        // Create the file and write text to it.
+        outputStr = [NSString stringWithFormat:@"%@%@", @"0\n", str];
+        data = [outputStr dataUsingEncoding:NSUTF8StringEncoding];
+        [data writeToFile:statsFile atomically:YES];
+    }
+    
+    bool successful = false;
+    if ([fileManager fileExistsAtPath:jsFile]) {
+        // Add the text at the end of the file.
+        NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:jsFile];
+        unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:jsFile error:nil] fileSize];
         
-        fileManager = [NSFileManager defaultManager];
-        if ([fileManager fileExistsAtPath:filePath]) {
-            // Add the text at the end of the file.
-            NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:filePath];
-            [fileHandler seekToEndOfFile];
-            data = [str dataUsingEncoding:NSUTF8StringEncoding];
-            [fileHandler writeData:data];
-            [fileHandler closeFile];
-        } else {
-            // Create the file and write text to it.
-            str2 = [NSString stringWithFormat:@"%@%@", @"0\n", str];
-            data = [str2 dataUsingEncoding:NSUTF8StringEncoding];
-            [data writeToFile:filePath atomically:YES];
-        }
-        
-        bool successful = false;
-        if ([fileManager fileExistsAtPath:jsFilePath]) {
-            // Add the text at the end of the file.
-            NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:jsFilePath];
-            unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:jsFilePath error:nil] fileSize];
-            
-            if (fileSize > 2) {
-                successful = true;
-                [fileHandler seekToFileOffset:(fileSize-3)];
-                if (str.length > 1) {
-                    if ([[str substringFromIndex:(str.length-1)] isEqualToString:@"\n"]) {
-                        str2 = [str substringToIndex:(str.length-1)];
-                        str = [str2 stringByAppendingString:@"\\n"];
-                    }
-                }
-                data = [str dataUsingEncoding:NSUTF8StringEncoding];
-                [fileHandler writeData:data];
-                NSData *data2 = [@"\";\n" dataUsingEncoding:NSUTF8StringEncoding];
-                [fileHandler writeData:data2];
-                [fileHandler closeFile];
-            }
-        }
-        if (!successful) {
-            // Create the file and write text to it.
+        if (fileSize > 2) {
+            successful = true;
+            [fileHandler seekToFileOffset:(fileSize-3)];
             if (str.length > 1) {
                 if ([[str substringFromIndex:(str.length-1)] isEqualToString:@"\n"]) {
-                    str2 = [str substringToIndex:(str.length-1)];
-                    str = [str2 stringByAppendingString:@"\\n"];
+                    outputStr = [str substringToIndex:(str.length-1)];
+                    str = [outputStr stringByAppendingString:@"\\n"];
                 }
             }
-            str2 = [NSString stringWithFormat:@"%@%@", @"\\n", str];
-            str2 = [@"var stats=\"" stringByAppendingString:str2];
-            str2 = [str2 stringByAppendingString:@"\";\n"];
-            data = [str2 dataUsingEncoding:NSUTF8StringEncoding];
-            [data writeToFile:jsFilePath atomically:YES];
+            data = [str dataUsingEncoding:NSUTF8StringEncoding];
+            [fileHandler writeData:data];
+            NSData *data2 = [@"\";\n" dataUsingEncoding:NSUTF8StringEncoding];
+            [fileHandler writeData:data2];
+            [fileHandler closeFile];
         }
+    }
+    if (!successful) {
+        // Create the file and write text to it.
+        if (str.length > 1) {
+            if ([[str substringFromIndex:(str.length-1)] isEqualToString:@"\n"]) {
+                outputStr = [str substringToIndex:(str.length-1)];
+                str = [outputStr stringByAppendingString:@"\\n"];
+            }
+        }
+        outputStr = [NSString stringWithFormat:@"%@%@", @"\\n", str];
+        outputStr = [@"var stats=\"" stringByAppendingString:outputStr];
+        outputStr = [outputStr stringByAppendingString:@"\";\n"];
+        data = [outputStr dataUsingEncoding:NSUTF8StringEncoding];
+        [data writeToFile:jsFile atomically:YES];
     }
 }
 
@@ -181,10 +170,10 @@ int numDays = 0;
     setupScriptPath = [bundle pathForResource:@"runner" ofType:@"sh"];
     killServerPath = [bundle pathForResource:@"kill_server" ofType:@"sh"];
     portString = [NSString stringWithFormat:@"%u", PORT];
+    [AppDelegate initializeDirectories];
     [AppDelegate setupServer];
-    [AppDelegate initializeFiles];
-    if ([fileManager fileExistsAtPath:filePath]) {
-        NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:filePath];
+    if ([fileManager fileExistsAtPath:statsFile]) {
+        NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:statsFile];
         NSData *data = [fileHandler readDataOfLength:10];
         NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
         if ([str length] == 0) {
@@ -211,7 +200,7 @@ int numDays = 0;
     [AppDelegate genRedirFile];
     NSString *visualizationPath = [bundle pathForResource:@"Stats" ofType:@"html"];
     NSLog(@"Copying %@ to %@", visualizationPath, visualizationFile);
-    [fileManager removeItemAtPath:visualizationFile error:nil]; //  Remove the old file (once the UI is stable, this can be omitted)
+    [fileManager removeItemAtPath:visualizationFile error:nil]; // Remove the old file (once the UI is stable, this can be omitted)
     [fileManager copyItemAtPath:visualizationPath toPath:visualizationFile error:nil];
     NSString *d3Path = [bundle pathForResource:@"d3.v4.min" ofType:@"js"];
     NSLog(@"Copying %@ to %@", d3Path, d3File);
@@ -219,6 +208,9 @@ int numDays = 0;
     NSString *mainJSPath = [bundle pathForResource:@"main" ofType:@"js"];
     NSLog(@"Copying %@ to %@", mainJSPath, mainJSFile);
     [fileManager copyItemAtPath:mainJSPath toPath:mainJSFile error:nil];
+    NSString *trophyImagePath = [bundle pathForResource:@"trophy16" ofType:@"png"];
+    NSLog(@"Copying %@ to %@", trophyImagePath, iconFile);
+    [fileManager copyItemAtPath:trophyImagePath toPath:iconFile error:nil];
 }
 
 // see https://github.com/electron/electron/issues/3038

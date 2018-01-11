@@ -1,6 +1,5 @@
 #!/bin/bash
 
-mkdir -p "$HOME/Documents/Productivity Helper/scripts"
 cd "$HOME/Documents/Productivity Helper"
 
 if [ "$#" -eq 0 ]; then PORT=8008; else PORT=$1; fi
