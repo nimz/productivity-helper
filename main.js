@@ -37,7 +37,7 @@ function leadingZero(i) {
 }
 
 // adapted from http://stackoverflow.com/questions/4522213/can-someone-explain-this-javascript-real-time-clock-to-me
-function startTime() {
+function currentTimeStr() {
   var today = new Date();
   var mo = leadingZero(today.getMonth()+1),
       d = leadingZero(today.getDate()),
@@ -45,8 +45,12 @@ function startTime() {
       h = leadingZero(today.getHours()),
       mn = leadingZero(today.getMinutes()),
       s = leadingZero(today.getSeconds());
-  document.getElementById('time').innerHTML = mo + "/" + d + "/" + y + " " + h + ":" + mn + ":" + s;
-  t = setTimeout(function () {
+  return mo + "/" + d + "/" + y + " " + h + ":" + mn + ":" + s;
+}
+
+function startTime() {
+  document.getElementById('time').innerHTML = currentTimeStr();
+  t = setTimeout(function() {
       startTime()
   }, 250);
 }
@@ -96,6 +100,7 @@ d3.text("Statistics.txt?" + Math.floor(Math.random() * 9999), function(d) {
         actType = 1;
       }
       else actType = 2;
+      if (activity.length < 3) activity.push(currentTimeStr());
       var startTime = Date.parse(activity[1]), endTime = Date.parse(activity[2]);
       var duration = (endTime - startTime)/1000;
       activity.push(actType);

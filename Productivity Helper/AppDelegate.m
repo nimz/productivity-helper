@@ -207,6 +207,7 @@ int numDays = 0;
     [fileManager copyItemAtPath:d3Path toPath:d3File error:nil];
     NSString *mainJSPath = [bundle pathForResource:@"main" ofType:@"js"];
     NSLog(@"Copying %@ to %@", mainJSPath, mainJSFile);
+    [fileManager removeItemAtPath:mainJSFile error:nil]; // Remove the old file (once the UI is stable, this can be omitted)
     [fileManager copyItemAtPath:mainJSPath toPath:mainJSFile error:nil];
     NSString *trophyImagePath = [bundle pathForResource:@"trophy16" ofType:@"png"];
     NSLog(@"Copying %@ to %@", trophyImagePath, iconFile);
