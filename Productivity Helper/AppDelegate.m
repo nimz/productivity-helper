@@ -220,7 +220,8 @@ int numDays = 0;
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender {
-    [AppDelegate stopWorking];
+    if (![self stopWorking])
+        return NSTerminateCancel; // abort termination if canceled
     //[AppDelegate stopServer]; // May as well leave server up so user can still see stats!
     NSLog(@"Application exited");
     return NSTerminateNow;
@@ -294,8 +295,19 @@ int numDays = 0;
     [AppDelegate writeString:str];
 }
 
-+ (void)stopWorking {
-    if (!working) return;
+- (bool)stopWorking {
+    if (!working) return true;
+    if ([prefController doConfirm]) {
+        NSAlert *alert = [[NSAlert alloc] init];
+        [alert setMessageText:@"Are you sure you want to stop this session?"];
+        [alert addButtonWithTitle:@"Quit"];
+        [alert addButtonWithTitle:@"Cancel"];
+        NSInteger selection = [alert runModal];
+        if (selection != NSAlertFirstButtonReturn) {
+            return false;
+        }
+    }
+    NSLog(@"Ending session\n");
     working = false;
     NSString *start = [AppDelegate getTimeString];
     if (!breaking && !slacking)
@@ -306,13 +318,15 @@ int numDays = 0;
     [AppDelegate writeString:stop];
     [AppDelegate updateNumDays];
     currentTask = nil;
+    return true;
 }
 
 NSString *prefix = @"";
 
 - (IBAction)startSession:(id)sender {
     if (working) {
-        [AppDelegate stopWorking];
+        if (![self stopWorking])
+            return;
         [AppDelegate resetButtonStyle:_slackButton];
         [AppDelegate resetButtonStyle:_breakButton];
         [_breakButton setTitle:@"Go On Break"];
@@ -327,6 +341,8 @@ NSString *prefix = @"";
         timer = nil;
     }
     else {
+        if (![self changeActivityHelper])
+            return;
         NSLog(@"Starting session\n");
         prevNumDays = numDays;
         numDays++;
@@ -335,7 +351,6 @@ NSString *prefix = @"";
         [_breakButton setEnabled:YES];
         [_changeButton setEnabled:YES];
         [_startButton setTitle:@"Stop Work Session"];
-        [self changeActivity:sender];
         NSDate *date = [NSDate date];
         NSString *str = [NSString stringWithFormat:@"Session %d, %@\n", numDays, [dateFormatter stringFromDate:date]];
         [AppDelegate writeString:str];
@@ -430,23 +445,22 @@ NSString *prefix = @"";
 }
 
 // Adapted from https://stackoverflow.com/questions/20392802/how-to-display-an-input-box-in-mac-osx-using-c
-- (NSString *)inputBox:(NSString *)prompt allowCancel:(bool)cancellable {
+- (NSString *)inputBox:(NSString *)prompt {
     NSString *result;
     unsigned int loopCount = 0;
     do {
         NSAlert *alert = [[NSAlert alloc] init];
         [alert setMessageText:prompt];
         [alert addButtonWithTitle:@"OK"];
-        if (cancellable)
-            [alert addButtonWithTitle:@"Cancel"];
+        [alert addButtonWithTitle:@"Cancel"];
 
         if (loopCount++ > 0)
             [alert setInformativeText:@"Please enter the name of the activity"];
 
         NSTextField *input = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 250, 24)];
         [alert setAccessoryView:input];
-        NSInteger button = [alert runModal];
-        if (button == NSAlertFirstButtonReturn) {
+        NSInteger selection = [alert runModal];
+        if (selection == NSAlertFirstButtonReturn) {
             [input validateEditing];
             result = [input stringValue];
             result = [result stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -459,8 +473,12 @@ NSString *prefix = @"";
 }
 
 - (IBAction)changeActivity:(id)sender {
+    [self changeActivityHelper];
+}
+
+- (bool)changeActivityHelper {
     bool firstActivity = (currentTask == nil);
-    NSString *mss = [self inputBox:@"What are you working on?" allowCancel:(!firstActivity)];
+    NSString *mss = [self inputBox:@"What are you working on?"];
     if (mss) {
         NSLog(@"New Activity: %@\n", mss);
         currentTask = mss;
@@ -473,7 +491,10 @@ NSString *prefix = @"";
                 [AppDelegate startTask];
             }
         }
+        return true;
     }
+    else
+        return false;
 }
 
 - (void)updateTimer {

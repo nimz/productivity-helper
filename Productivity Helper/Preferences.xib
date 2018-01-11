@@ -26,8 +26,8 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <button misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VNt-5A-cFb">
-                        <rect key="frame" x="189" y="117" width="166" height="18"/>
-                        <buttonCell key="cell" type="check" title="Confirm Before Quitting" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="v8g-4b-TNS">
+                        <rect key="frame" x="189" y="117" width="172" height="18"/>
+                        <buttonCell key="cell" type="check" title="Confirm Before Stopping" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="v8g-4b-TNS">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
