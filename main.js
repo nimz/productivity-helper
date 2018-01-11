@@ -57,14 +57,14 @@ function currentTimeStr() {
 }
 
 function startTime() {
-  document.getElementById('time').innerHTML = currentTimeStr();
+  document.getElementById("time").innerHTML = currentTimeStr();
   /*setTimeout(function() {
       startTime()
   }, 250);*/ // right now, we only load the data once!
 }
 startTime();
 
-var re = new RegExp('(?<!\\\\),');
+var re = new RegExp("(?<!\\\\),");
 var fulldata;
 // avoid caching
 d3.text("Statistics.txt?" + Math.floor(Math.random() * 9999), function(d) {
@@ -139,7 +139,7 @@ function hexToRgb(hex) {
 }
 // Adapted from https://stackoverflow.com/a/5624139
 function rgbToHex(d) {
-  var r = d['r'], g = d['g'], b = d['b'];
+  var r = d["r"], g = d["g"], b = d["b"];
   return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }
 var lf = 1.2, la = 5;
@@ -153,15 +153,15 @@ function hoverizeColor(c) {
 
 // Thanks to https://stackoverflow.com/a/46774740/2258552
 const toTitleCase = (str) => {
-  const articles = ['a', 'an', 'the'];
-  const conjunctions = ['for', 'and', 'nor', 'but', 'or', 'yet', 'so'];
+  const articles = ["a", "an", "the"];
+  const conjunctions = ["for", "and", "nor", "but", "or", "yet", "so"];
   const prepositions = [
-    'with', 'at', 'from', 'into','upon', 'of', 'to', 'in', 'for',
-    'on', 'by', 'like', 'over', 'plus', 'but', 'up', 'down', 'off', 'near'
+    "with", "at", "from", "into","upon", "of", "to", "in", "for",
+    "on", "by", "like", "over", "plus", "but", "up", "down", "off", "near"
   ];
 
   // handle escaped commas as well
-  const replaceCharsWithSpace = (str) => str.replace('\\,', ',').replace(/(\s\s+)/gi, ' ');
+  const replaceCharsWithSpace = (str) => str.replace("\\,", ",").replace(/(\s\s+)/gi, " ");
   const capitalizeFirstLetter = (str) => str.charAt(0).toUpperCase() + str.substr(1);
   const normalizeStr = (str) => str.toLowerCase().trim();
   const shouldCapitalize = (word, fullWordList, posWithinStr) => {
@@ -175,7 +175,7 @@ const toTitleCase = (str) => {
   str = replaceCharsWithSpace(str);
   str = normalizeStr(str);
 
-  let words = str.split(' ');
+  let words = str.split(" ");
   if (words.length <= 2) { // Strings less than 3 words long should always have first words capitalized
     words = words.map(w => capitalizeFirstLetter(w));
   }
@@ -185,7 +185,7 @@ const toTitleCase = (str) => {
     }
   }
 
-  return words.join(' ');
+  return words.join(" ");
 }
 
 var names_s = ["d", "h", "m", "s"], names_l = [" Day", " Hour", " Minute", " Second"];
@@ -225,11 +225,11 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
     }
     for (var key in workInfo) {
       if (key === "Break" || key === "Wasted") continue;
-      tasks.push(key);
+      tasks.push([key, workInfo[key]]);
       workTotals2.push(workInfo[key]);
     }
-    tasks.push("Break");
-    tasks.push("Wasted");
+    tasks.push(["Break", workTotals1[1]]);
+    tasks.push(["Wasted", workTotals1[2]]);
     workTotals2.push(workTotals1[1]);
     workTotals2.push(workTotals1[2]);
     loaded = true;
@@ -240,7 +240,7 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
 
   var workData = showTasks ? workTotals2 : workTotals1;
   colors = showTasks ? d3.schemeCategory20 : d3.schemeCategory10;
-  var categories = showTasks ? tasks : ["Work Time", "Break Time", "Wasted Time"];
+  var categories = showTasks ? tasks : ["Work Time", "Break Time", "Wasted Time"].map(function(s,i){ return [s, workTotals1[i]]; });
   svg.selectAll("g").remove();
   var g = svg.append("g").attr("transform", "translate(" + w/4 + ", " + h/2 + ")");
   var pie = d3.pie().sort(null);
@@ -265,43 +265,43 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
     d3.select(this).selectAll("path").attr("fill", colors[i]);
   });
   var legendSqSize = 20, legendSpacing = 4;
-  var legend = svg.selectAll('.legend')
+  var legend = svg.selectAll(".legend")
                   .data(categories)
                   .enter()
-                  .append('g')
-                  .attr('class', 'legend')
-                  .attr('transform', function(d,i){
+                  .append("g")
+                  .attr("class", "legend")
+                  .attr("transform", function(d,i){
                     var height = legendSqSize + legendSpacing;
                     var offset = categories.length * height / 2;
                     var vert = i * height - offset + h/2;
                     var horz = w * 4/5;
-                    return 'translate(' + horz + ',' + vert + ')';
+                    return "translate(" + horz + "," + vert + ")";
                   });
   var textOffsetX = 4, textOffsetY = 5; // adding textOffsetY = 5 seems to center text vertically w.r.t. legend square
-  legend.append('rect')
-        .attr('width', legendSqSize)
-        .attr('height', legendSqSize)
-        .style('fill', function(d,i){ return colors[i]; })
-        .style('stroke', function(d,i){ return colors[i]; })
-        .style('stroke-width', 1)
+  legend.append("rect")
+        .attr("width", legendSqSize)
+        .attr("height", legendSqSize)
+        .style("fill", function(d,i){ return colors[i]; })
+        .style("stroke", function(d,i){ return colors[i]; })
+        .style("stroke-width", 1)
         .on("mouseover", function(d,i){
-          d3.select(this).style('fill', hoverizeColor(colors[i]));
+          d3.select(this).style("fill", hoverizeColor(colors[i]));
           d3.select(this.parentNode).append("text")
             .attr("fill", "black")
             .attr("style", "pointer-events: none; user-select: none;")
             .attr("class", "hovertext")
-            .text(function(d){ return "placeholder"; })
+            .text(function(d){ return (showSecsOnly ? d[1] + "s" : timeString(d[1], true)) + " (" + (d[1]/sessLength*100).toFixed(1) + "%)"; })
             .attr("transform", function(d){ return "translate(-" + (this.getComputedTextLength() + textOffsetX) + ", " + (legendSqSize / 2 + textOffsetY) + ")" });
         })
         .on("mouseout", function(d,i){
           d3.select(this.parentNode).selectAll(".hovertext").remove();
           d3.select(this).style("fill", colors[i]);
         });
-  legend.append('text')
-        .attr('x', legendSqSize + textOffsetX)
-        .attr('y', legendSqSize / 2 + textOffsetY)
+  legend.append("text")
+        .attr("x", legendSqSize + textOffsetX)
+        .attr("y", legendSqSize / 2 + textOffsetY)
         .attr("fill", "black")
-        .text(function(d){ return d; });
+        .text(function(d){ return d[0]; });
 }
 
 function setMouseoverText() {
