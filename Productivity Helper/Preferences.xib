@@ -7,7 +7,9 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="PreferencesController">
             <connections>
-                <outlet property="checkbox" destination="2Lc-kO-Eft" id="qLo-J3-F6B"/>
+                <outlet property="confirmCheckbox" destination="VNt-5A-cFb" id="HFu-S4-XDW"/>
+                <outlet property="highlightCheckbox" destination="MPx-6f-5Zm" id="swc-wn-M32"/>
+                <outlet property="secondsCheckbox" destination="2Lc-kO-Eft" id="hQ3-9L-Daz"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="VeG-BL-giD"/>
             </connections>
         </customObject>
@@ -18,26 +20,54 @@
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="480" height="270"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+            <value key="maxSize" type="size" width="800" height="300"/>
             <view key="contentView" id="EiT-Mj-1SZ">
                 <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
+                    <button misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VNt-5A-cFb">
+                        <rect key="frame" x="189" y="117" width="166" height="18"/>
+                        <buttonCell key="cell" type="check" title="Confirm Before Quitting" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="v8g-4b-TNS">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="toggleConfirmCheckbox:" target="-2" id="aMa-r8-XP7"/>
+                        </connections>
+                    </button>
+                    <button misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MPx-6f-5Zm">
+                        <rect key="frame" x="135" y="72" width="232" height="18"/>
+                        <buttonCell key="cell" type="check" title="Highlight Slack/Break When Active" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="IJO-Jn-cQT">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="toggleHighlightCheckbox:" target="-2" id="XIQ-cY-jdX"/>
+                        </connections>
+                    </button>
                     <button misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Lc-kO-Eft">
-                        <rect key="frame" x="184" y="105" width="112" height="18"/>
+                        <rect key="frame" x="216" y="169" width="112" height="18"/>
                         <buttonCell key="cell" type="check" title="Show Seconds" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="gie-l4-mOQ">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
                         <connections>
-                            <action selector="toggleCheckbox:" target="-2" id="pDx-AB-7wI"/>
+                            <action selector="toggleSecondsCheckbox:" target="-2" id="8i6-Uo-Mn1"/>
                         </connections>
                     </button>
                 </subviews>
                 <constraints>
+                    <constraint firstItem="MPx-6f-5Zm" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="10" id="0Cs-rf-vkF"/>
+                    <constraint firstItem="MPx-6f-5Zm" firstAttribute="centerX" secondItem="EiT-Mj-1SZ" secondAttribute="centerX" id="0GB-9y-19y"/>
+                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="MPx-6f-5Zm" secondAttribute="trailing" constant="10" id="FdH-5L-QRr"/>
                     <constraint firstItem="2Lc-kO-Eft" firstAttribute="centerX" secondItem="EiT-Mj-1SZ" secondAttribute="centerX" id="Fdx-Mq-Awl"/>
+                    <constraint firstItem="MPx-6f-5Zm" firstAttribute="top" secondItem="VNt-5A-cFb" secondAttribute="bottom" constant="20" id="Ogq-kW-myS"/>
                     <constraint firstItem="2Lc-kO-Eft" firstAttribute="top" relation="greaterThanOrEqual" secondItem="EiT-Mj-1SZ" secondAttribute="top" constant="10" id="T4c-Wf-wf6"/>
                     <constraint firstItem="2Lc-kO-Eft" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="10" id="Z9K-PI-3KS"/>
-                    <constraint firstItem="2Lc-kO-Eft" firstAttribute="centerY" secondItem="EiT-Mj-1SZ" secondAttribute="centerY" id="dDD-4j-0zp"/>
+                    <constraint firstItem="VNt-5A-cFb" firstAttribute="centerY" secondItem="EiT-Mj-1SZ" secondAttribute="centerY" id="cUV-iO-Iul"/>
+                    <constraint firstItem="VNt-5A-cFb" firstAttribute="top" secondItem="2Lc-kO-Eft" secondAttribute="bottom" constant="20" id="gSl-nk-uIv"/>
+                    <constraint firstItem="VNt-5A-cFb" firstAttribute="centerX" secondItem="EiT-Mj-1SZ" secondAttribute="centerX" id="u7v-Wn-t9f"/>
+                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="MPx-6f-5Zm" secondAttribute="bottom" constant="10" id="wOe-0o-RBe"/>
                 </constraints>
             </view>
             <point key="canvasLocation" x="352" y="356"/>

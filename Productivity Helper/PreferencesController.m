@@ -14,23 +14,43 @@
 
 @implementation PreferencesController
 
-bool init = false, showSec = true;
+bool init = false, showSec = true, confirm = false, highlight = false;
 
 - (void)windowDidLoad {
     [super windowDidLoad];
+    [_confirmCheckbox setState:NSOffState];
+    [_highlightCheckbox setState:NSOffState];
     init = true;
     NSWindow *prefWindow = [[[NSApplication sharedApplication] windows] objectAtIndex:1];
     [[prefWindow standardWindowButton:NSWindowZoomButton] setEnabled:NO];
     [prefWindow setTitle:@"Preferences"];
 }
 
-- (IBAction)toggleCheckbox:(id)sender {
+- (IBAction)toggleSecondsCheckbox:(id)sender {
     NSLog(@"Toggled seconds checkbox\n");
     showSec = !showSec;
 }
 
+- (IBAction)toggleConfirmCheckbox:(id)sender {
+    NSLog(@"Toggled confirm checkbox\n");
+    confirm = !confirm;
+}
+
+- (IBAction)toggleHighlightCheckbox:(id)sender {
+    NSLog(@"Toggled highlight checkbox\n");
+    highlight = !highlight;
+}
+
 - (bool)showSeconds {
     return showSec;
+}
+
+- (bool)doConfirm {
+    return confirm;
+}
+
+- (bool)doHighlight {
+    return highlight;
 }
 
 - (bool)initialized {

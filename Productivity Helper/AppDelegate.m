@@ -252,22 +252,26 @@ int numDays = 0;
     return start;
 }
 
-+ (void)stopSlacking {
+- (void)stopSlacking {
     if (!slacking) return;
     slacking = false;
     NSString *start = [AppDelegate getTimeString];
     NSString *str = [NSString stringWithFormat:@", %@\n",start];
     [AppDelegate writeString:str];
     [AppDelegate startTask];
+    [_slackButton setTitle:@"Slack Off"];
+    [AppDelegate resetButtonStyle:_slackButton];
 }
 
-+ (void)stopBreaking {
+- (void)stopBreaking {
     if (!breaking) return;
     breaking = false;
     NSString *start = [AppDelegate getTimeString];
     NSString *str = [NSString stringWithFormat:@", %@\n",start];
     [AppDelegate writeString:str];
     [AppDelegate startTask];
+    [_breakButton setTitle:@"Go On Break"];
+    [AppDelegate resetButtonStyle:_breakButton];
 }
 
 + (void)stopTask {
@@ -309,6 +313,8 @@ NSString *prefix = @"";
 - (IBAction)startSession:(id)sender {
     if (working) {
         [AppDelegate stopWorking];
+        [AppDelegate resetButtonStyle:_slackButton];
+        [AppDelegate resetButtonStyle:_breakButton];
         [_breakButton setTitle:@"Go On Break"];
         [_slackButton setTitle:@"Slack Off"];
         [_startButton setTitle:@"Start Work Session"];
@@ -350,22 +356,38 @@ NSString *prefix = @"";
     [AppDelegate writeString:str];
 }
 
++ (void)colorizeButton:(NSButton *)button withColor:(NSColor *)color {
+    // thanks to https://stackoverflow.com/questions/29387102/how-to-set-background-color-of-nsbutton-osx
+    // and https://stackoverflow.com/questions/1017468/change-background-color-of-nsbutton
+    [button setBezelStyle:NSTexturedSquareBezelStyle];
+    [button setBordered:false];
+    [button setWantsLayer:true];
+    button.layer.backgroundColor = color.CGColor;
+}
+
++ (void)resetButtonStyle:(NSButton *)button {
+    [button setBezelStyle:NSRoundedBezelStyle];
+    [button setBordered:true];
+    [button setWantsLayer:false];
+}
+
 - (IBAction)startBreak:(id)sender {
     if (breaking) {
-        [AppDelegate stopBreaking];
-        [_breakButton setTitle:@"Go On Break"];
+        [self stopBreaking];
         prefix = [currentTask stringByAppendingString:@": "];
     }
     else {
         breaking = true;
         if (slacking) {
-            [AppDelegate stopSlacking];
-            [_slackButton setTitle:@"Slack Off"];
+            [self stopSlacking];
         }
         else {
             [AppDelegate stopTask];
         }
         [_breakButton setTitle:@"End Break"];
+        if ([prefController doHighlight]) {
+            [AppDelegate colorizeButton:_breakButton withColor:[NSColor yellowColor]];
+        }
         NSString *start = [AppDelegate getTimeString];
         NSString *str = [NSString stringWithFormat:@"Break, %@", start];
         [AppDelegate writeString:str];
@@ -376,20 +398,22 @@ NSString *prefix = @"";
 
 - (IBAction)startSlack:(id)sender {
     if (slacking) {
-        [AppDelegate stopSlacking];
+        [self stopSlacking];
         [_slackButton setTitle:@"Slack Off"];
         prefix = [currentTask stringByAppendingString:@": "];
     }
     else {
         slacking = true;
         if (breaking) {
-            [AppDelegate stopBreaking];
-            [_breakButton setTitle:@"Go On Break"];
+            [self stopBreaking];
         }
         else {
             [AppDelegate stopTask];
         }
         [_slackButton setTitle:@"Get Back To Work!"];
+        if ([prefController doHighlight]) {
+            [AppDelegate colorizeButton:_slackButton withColor:[NSColor redColor]];
+        }
         NSString *start = [AppDelegate getTimeString];
         NSString *str = [NSString stringWithFormat:@"Wasted, %@", start];
         [AppDelegate writeString:str];
@@ -458,7 +482,7 @@ NSString *prefix = @"";
     NSDate *timerDate = [NSDate dateWithTimeIntervalSince1970:timeInterval];
     bool showSecondsCur = [prefController showSeconds];
 
-    if ([prefController init] && showSecondsCur != showSecondsLast) {
+    if ([prefController init] && showSecondsCur != showSecondsLast) { // only change format if needed
         if (showSecondsCur)
             [timerFormatter setDateFormat:@"HH:mm:ss"];
         else
