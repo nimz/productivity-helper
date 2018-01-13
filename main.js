@@ -66,6 +66,7 @@ startTime();
 
 var re = new RegExp("(?<!\\\\),");
 var fulldata;
+var bad_lines = [];
 // avoid caching
 d3.text("Statistics.txt?" + Math.floor(Math.random() * 9999), function(d) {
   var lines = d.split("\n");
@@ -113,9 +114,17 @@ d3.text("Statistics.txt?" + Math.floor(Math.random() * 9999), function(d) {
       var duration = (endTime - startTime)/1000;
       activity.push(actType);
       activity.push(duration);
-      curSessData.push(activity);
+      if (isNaN(duration)) {
+        var alertstr = 'Malformed line in Statistics.txt: "' + line + '" [line ' + (index+1) + ']';
+        bad_lines.push(alertstr);
+        console.log(alertstr);
+      }
+      else
+        curSessData.push(activity);
     }
   }
+  if (bad_lines.length > 0)
+    alert(bad_lines.join("\n"));
   sessions.push(curSessData);
   fulldata = sessions;
   processData();

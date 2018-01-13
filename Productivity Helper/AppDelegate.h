@@ -24,6 +24,7 @@
 @property (weak) IBOutlet NSMenuItem *slackMenuItem;
 @property (weak) IBOutlet NSMenuItem *breakMenuItem;
 - (IBAction)showStatistics:(id)sender;
+- (IBAction)openStatisticsFile:(id)sender;
 - (IBAction)startSession:(id)sender;
 - (IBAction)startSlack:(id)sender;
 - (IBAction)startBreak:(id)sender;

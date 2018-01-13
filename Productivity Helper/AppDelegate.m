@@ -541,4 +541,9 @@ NSString *prefix = @"";
     // Does not use openURL to force opening with Chrome, because UI is untested on other browsers (TODO: Change this)
     [[NSWorkspace sharedWorkspace] openFile:redirFile withApplication:@"Google Chrome.app"];
 }
+
+- (IBAction)openStatisticsFile:(id)sender {
+    [[NSWorkspace sharedWorkspace] openFile:statsFile];
+}
+
 @end
