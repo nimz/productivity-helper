@@ -172,7 +172,7 @@ int numDays = 0;
     [mainWindow setLevel:NSFloatingWindowLevel];
     [[mainWindow standardWindowButton:NSWindowCloseButton] setEnabled:NO];
     NSBundle *bundle = [NSBundle mainBundle];
-    setupScriptPath = [bundle pathForResource:@"runner" ofType:@"sh"];
+    setupScriptPath = [bundle pathForResource:@"start_server" ofType:@"sh"];
     killServerPath = [bundle pathForResource:@"kill_server" ofType:@"sh"];
     portString = [NSString stringWithFormat:@"%u", PORT];
     [AppDelegate initializeDirectories];

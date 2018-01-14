@@ -10,6 +10,7 @@
 		092B6AED1CA27F710062A54B /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 092B6AEC1CA27F710062A54B /* Preferences.xib */; };
 		092B6AF01CA27F8A0062A54B /* PreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 092B6AEF1CA27F8A0062A54B /* PreferencesController.m */; };
 		093418572006D9A800C44407 /* trophy16.png in Resources */ = {isa = PBXBuildFile; fileRef = 093418562006D9A800C44407 /* trophy16.png */; };
+		095397B9200B260C001866DE /* start_server.sh in Resources */ = {isa = PBXBuildFile; fileRef = 095397B8200B260C001866DE /* start_server.sh */; };
 		0960F571200B017C0070B40E /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 0960F56F200AFFBD0070B40E /* README.md */; };
 		097B8EAE2006B5A00059E938 /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = 097B8EAD2006B5A00059E938 /* main.js */; };
 		09903A902006A9310064D487 /* d3.v4.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 09903A8F2006A9310064D487 /* d3.v4.min.js */; };
@@ -20,7 +21,6 @@
 		09ADB7541BE0B21E0084A3DA /* Productivity_HelperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 09ADB7531BE0B21E0084A3DA /* Productivity_HelperTests.m */; };
 		09ADB75F1BE0B21E0084A3DA /* Productivity_HelperUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 09ADB75E1BE0B21E0084A3DA /* Productivity_HelperUITests.m */; };
 		09E6864A20060FF10036814A /* kill_server.sh in Resources */ = {isa = PBXBuildFile; fileRef = 09E6864920060FF10036814A /* kill_server.sh */; };
-		09E6864C200616E40036814A /* runner.sh in Resources */ = {isa = PBXBuildFile; fileRef = 09E6864B200616E40036814A /* runner.sh */; };
 		09E6864E20061E4F0036814A /* Stats.html in Resources */ = {isa = PBXBuildFile; fileRef = 09E6864D20061E4F0036814A /* Stats.html */; };
 /* End PBXBuildFile section */
 
@@ -46,6 +46,7 @@
 		092B6AEE1CA27F8A0062A54B /* PreferencesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferencesController.h; sourceTree = "<group>"; };
 		092B6AEF1CA27F8A0062A54B /* PreferencesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferencesController.m; sourceTree = "<group>"; };
 		093418562006D9A800C44407 /* trophy16.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = trophy16.png; path = "Productivity Helper/Assets.xcassets/AppIcon.appiconset/trophy16.png"; sourceTree = "<group>"; };
+		095397B8200B260C001866DE /* start_server.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = start_server.sh; sourceTree = "<group>"; };
 		0960F56F200AFFBD0070B40E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		097B8EAD2006B5A00059E938 /* main.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = main.js; sourceTree = "<group>"; };
 		09903A8F2006A9310064D487 /* d3.v4.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = d3.v4.min.js; sourceTree = "<group>"; };
@@ -63,7 +64,6 @@
 		09ADB75E1BE0B21E0084A3DA /* Productivity_HelperUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Productivity_HelperUITests.m; sourceTree = "<group>"; };
 		09ADB7601BE0B21E0084A3DA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		09E6864920060FF10036814A /* kill_server.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = kill_server.sh; sourceTree = "<group>"; };
-		09E6864B200616E40036814A /* runner.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = runner.sh; sourceTree = "<group>"; };
 		09E6864D20061E4F0036814A /* Stats.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = Stats.html; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -96,7 +96,7 @@
 			isa = PBXGroup;
 			children = (
 				09E6864920060FF10036814A /* kill_server.sh */,
-				09E6864B200616E40036814A /* runner.sh */,
+				095397B8200B260C001866DE /* start_server.sh */,
 				09E6864D20061E4F0036814A /* Stats.html */,
 				097B8EAD2006B5A00059E938 /* main.js */,
 				09903A8F2006A9310064D487 /* d3.v4.min.js */,
@@ -266,12 +266,12 @@
 			files = (
 				0960F571200B017C0070B40E /* README.md in Resources */,
 				09903A902006A9310064D487 /* d3.v4.min.js in Resources */,
-				09E6864C200616E40036814A /* runner.sh in Resources */,
 				093418572006D9A800C44407 /* trophy16.png in Resources */,
 				09ADB7461BE0B21E0084A3DA /* Assets.xcassets in Resources */,
 				09E6864A20060FF10036814A /* kill_server.sh in Resources */,
 				092B6AED1CA27F710062A54B /* Preferences.xib in Resources */,
 				09E6864E20061E4F0036814A /* Stats.html in Resources */,
+				095397B9200B260C001866DE /* start_server.sh in Resources */,
 				09ADB7491BE0B21E0084A3DA /* MainMenu.xib in Resources */,
 				097B8EAE2006B5A00059E938 /* main.js in Resources */,
 			);

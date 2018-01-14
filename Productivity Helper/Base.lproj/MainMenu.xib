@@ -252,7 +252,7 @@
                     </button>
                     <button verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Uf-bE-7b9">
                         <rect key="frame" x="35" y="119" width="151" height="32"/>
-                        <buttonCell key="cell" type="push" title="Slack Off!" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="gPy-V6-Hue">
+                        <buttonCell key="cell" type="push" title="Slack Off" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="gPy-V6-Hue">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
