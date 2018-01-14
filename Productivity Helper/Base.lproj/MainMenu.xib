@@ -214,6 +214,12 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Help" systemMenu="help" id="F2S-fz-NVQ">
                         <items>
+                            <menuItem title="Open README" id="XZE-8r-LCC">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="openReadme:" target="Voe-Tx-rLC" id="JJ2-oU-xgb"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Productivity Helper Help" keyEquivalent="?" id="FKE-Sm-Kum">
                                 <connections>
                                     <action selector="showHelp:" target="-1" id="y7X-2Q-9no"/>

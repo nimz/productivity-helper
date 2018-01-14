@@ -19,7 +19,7 @@ bool showSecondsLast = true;
 
 NSString *basedir = @"Productivity Helper/";
 NSString *documentsDir, *statsFile, *jsFile, *redirFile, *visualizationFile,
-         *mainJSFile, *d3File, *iconFile;
+         *mainJSFile, *d3File, *iconFile, *readmeFile;
 NSString *portString;
 NSString *setupScriptPath;
 NSString *killServerPath;
@@ -78,6 +78,7 @@ int numDays = 0;
         mainJSFile = [NSString stringWithFormat:@"%@%@%@", documentsDir, basedir, @"scripts/main.js"];
         d3File = [NSString stringWithFormat:@"%@%@%@", documentsDir, basedir, @"scripts/d3.v4.min.js"];
         iconFile = [NSString stringWithFormat:@"%@%@%@", documentsDir, basedir, @"images/favicon.png"];
+        readmeFile = [NSString stringWithFormat:@"%@%@%@", documentsDir, basedir, @"README.md"];
         fileManager = [NSFileManager defaultManager];
         [fileManager createDirectoryAtPath:[documentsDir stringByAppendingString:@"Productivity Helper/images"]
                withIntermediateDirectories:true attributes:nil error:nil];
@@ -202,6 +203,10 @@ int numDays = 0;
     [timerFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0.0]];
     [_startButton setEnabled:YES];
     [_startMenuItem setEnabled:YES];
+    [self initializeAuxiliaryFiles:bundle];
+}
+
+- (void)initializeAuxiliaryFiles:(NSBundle *)bundle {
     [AppDelegate genRedirFile];
     NSString *visualizationPath = [bundle pathForResource:@"Stats" ofType:@"html"];
     NSLog(@"Copying %@ to %@", visualizationPath, visualizationFile);
@@ -217,6 +222,9 @@ int numDays = 0;
     NSString *trophyImagePath = [bundle pathForResource:@"trophy16" ofType:@"png"];
     NSLog(@"Copying %@ to %@", trophyImagePath, iconFile);
     [fileManager copyItemAtPath:trophyImagePath toPath:iconFile error:nil];
+    NSString *readmePath = [bundle pathForResource:@"README" ofType:@"md"];
+    NSLog(@"Copying %@ to %@", readmePath, readmeFile);
+    [fileManager copyItemAtPath:readmePath toPath:readmeFile error:nil];
 }
 
 // see https://github.com/electron/electron/issues/3038
@@ -544,6 +552,10 @@ NSString *prefix = @"";
 
 - (IBAction)openStatisticsFile:(id)sender {
     [[NSWorkspace sharedWorkspace] openFile:statsFile];
+}
+
+- (IBAction)openReadme:(id)sender {
+    [[NSWorkspace sharedWorkspace] openFile:readmeFile];
 }
 
 @end
