@@ -169,7 +169,7 @@ const toTitleCase = (str) => {
     "on", "by", "like", "over", "plus", "but", "up", "down", "off", "near"
   ];
 
-  // handle escaped commas as well
+  // consolidate whitespace and handle escaped commas
   const replaceCharsWithSpace = (str) => str.replace("\\,", ",").replace(/(\s\s+)/gi, " ");
   const capitalizeFirstLetter = (str) => str.charAt(0).toUpperCase() + str.substr(1);
   const normalizeStr = (str) => str.toLowerCase().trim();
@@ -206,7 +206,7 @@ function timeString(num_secs, condensed=false) {
   nums[2] = Math.floor((num_secs % 3600) / 60);
   nums[3] = num_secs % 60;
   var retval = "";
-  for (var i = 0; i < 4; i++) {
+  for (let i = 0; i < 4; i++) {
     if (nums[i] != 0) {
       if (retval !== "") retval += ", ";
       retval += nums[i] + names[i];
@@ -220,9 +220,9 @@ function timeString(num_secs, condensed=false) {
 var workInfo = {}, workTotals1 = [0, 0, 0], workTotals2 = [], tasks = [], sessLength = 0, loaded = false, colors;
 function processData() { // TODO: Put d3 visualizations in separate file for faster loading (load basic ones first?)
   if (!loaded) {
-    for (var i = 0; i < fulldata.length; i++) {
+    for (let i = 0; i < fulldata.length; i++) {
       var session = fulldata[i];
-      for (var j = 2; j < session.length; j++) {
+      for (let j = 2; j < session.length; j++) {
         workTotals1[session[j][3]] += session[j][4];
         var activityName = toTitleCase(session[j][0]);
         if (activityName in workInfo)
@@ -274,6 +274,12 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
     d3.select(this).selectAll("path").attr("fill", colors[i]);
   });
   var legendSqSize = 20, legendSpacing = 4;
+  var textOffsetX = 4, textOffsetY = 5; // adding textOffsetY = 5 seems to center text vertically w.r.t. legend square
+
+  var categoryNames = [];
+  for (let i = 0; i < categories.length; i++) categoryNames.push(categories[i][0]);
+  var textWidths = computeTextWidths(categoryNames), maxWidth = Math.max(...textWidths) + textOffsetX + legendSqSize + 1;
+
   var legend = svg.selectAll(".legend")
                   .data(categories)
                   .enter()
@@ -283,10 +289,9 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
                     var height = legendSqSize + legendSpacing;
                     var offset = categories.length * height / 2;
                     var vert = i * height - offset + h/2;
-                    var horz = w * 4/5;
+                    var horz = Math.min(w * 4/5, w - maxWidth);
                     return "translate(" + horz + "," + vert + ")";
                   });
-  var textOffsetX = 4, textOffsetY = 5; // adding textOffsetY = 5 seems to center text vertically w.r.t. legend square
   legend.append("rect")
         .attr("width", legendSqSize)
         .attr("height", legendSqSize)
@@ -300,7 +305,7 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
             .attr("style", "pointer-events: none; user-select: none;")
             .attr("class", "hovertext")
             .text(function(d){ return (showSecsOnly ? d[1] + "s" : timeString(d[1], true)) + " (" + (d[1]/sessLength*100).toFixed(1) + "%)"; })
-            .attr("transform", function(d){ return "translate(-" + (this.getComputedTextLength() + textOffsetX) + ", " + (legendSqSize / 2 + textOffsetY) + ")" });
+            .attr("transform", function(d){ return "translate(-" + (this.getComputedTextLength() + textOffsetX) + ", " + (legendSqSize / 2 + textOffsetY) + ")"; });
         })
         .on("mouseout", function(d,i){
           d3.select(this.parentNode).selectAll(".hovertext").remove();
@@ -313,9 +318,28 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
         .text(function(d){ return d[0]; });
 }
 
+// Doesn't seem to be a significantly better way to do it; see https://stackoverflow.com/questions/29031659/calculate-width-of-text-before-drawing-the-text
+function computeTextWidths(input_text) {
+  var textWidths = [];
+  var g = svg.append('g')
+    .attr("id", "placeholder")
+    .selectAll('.placeholder')
+    .data(input_text)
+    .enter()
+    .append("text")
+    .text(function(d) { return d; })
+    .each(function(d,i) {
+        textWidths.push(this.getComputedTextLength());
+        this.remove();
+    });
+  svg.select("#placeholder").remove();
+  return textWidths;
+}
+
 function setMouseoverText() {
   var g = svg.selectAll("g");
   var label = d3.arc().outerRadius(radius*1.5).innerRadius(radius*1.5);
+  var arcTextOffsetX = 25, arcTextOffsetY = 5;
   g.selectAll(".arc").on("mouseover", function(d,i){
     this.parentNode.appendChild(this); // move to end, so that text does not get obscured (due to order in which SVG elements render)
     var arc_index = parseInt(d3.select(this).attr("id").substring(4));
@@ -323,8 +347,8 @@ function setMouseoverText() {
     d3.select(this).append("text")
                    .attr("transform", function(d){
                       var cent = label.centroid(d);
-                      cent[0] -= 15;
-                      cent[1] -= 5;
+                      cent[0] -= arcTextOffsetX;
+                      cent[1] -= arcTextOffsetY;
                       return "translate(" + cent + ")"; })
                    .attr("fill", "black")
                    .attr("style", "pointer-events: none; user-select: none;")
