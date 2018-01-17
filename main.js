@@ -28,6 +28,7 @@ function validateDate(i) {
   }
 }
 
+var workInfo, workTotals1, workTotals2, tasks, categoryNames, sessLength, loaded = false, colors, clicked, clickedSet = new Set();
 var showTasks = true;
 function toggleMode() {
   showTasks = !showTasks;
@@ -37,7 +38,6 @@ function toggleMode() {
 var showSecsOnly = false;
 function toggleShow() {
   showSecsOnly = !showSecsOnly;
-  setMouseoverText();
 }
 
 function leadingZero(i) {
@@ -217,14 +217,19 @@ function timeString(num_secs, condensed=false) {
   return retval;
 }
 
-var workInfo = {}, workTotals1 = [0, 0, 0], workTotals2 = [], tasks = [], sessLength = 0, loaded = false, colors;
 function processData() { // TODO: Put d3 visualizations in separate file for faster loading (load basic ones first?)
   if (!loaded) {
+    workInfo = {};
+    workTotals1 = [0, 0, 0];
+    workTotals2 = [];
+    tasks = [];
+    sessLength = 0;
     for (let i = 0; i < fulldata.length; i++) {
       var session = fulldata[i];
       for (let j = 2; j < session.length; j++) {
-        workTotals1[session[j][3]] += session[j][4];
         var activityName = toTitleCase(session[j][0]);
+        if (clickedSet.has(activityName)) continue;
+        workTotals1[session[j][3]] += session[j][4];
         if (activityName in workInfo)
           workInfo[activityName] += session[j][4];
         else
@@ -266,18 +271,15 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
      .attr("d", path)
      .attr("fill", function(d,i){ return colors[i]; });
 
-  setMouseoverText();
-  g.selectAll(".arc").on("mouseout", function(d,i){
-    d3.select(this)
-      .select("text")
-      .remove();
-    d3.select(this).selectAll("path").attr("fill", colors[i]);
-  });
+  setPiechartMouseoverText();
+
   var legendSqSize = 20, legendSpacing = 4;
   var textOffsetX = 4, textOffsetY = 5; // adding textOffsetY = 5 seems to center text vertically w.r.t. legend square
 
-  var categoryNames = [];
+  categoryNames = [];
   for (let i = 0; i < categories.length; i++) categoryNames.push(categories[i][0]);
+  clicked = new Array(categoryNames.length).fill(false);
+
   var textWidths = computeTextWidths(categoryNames), maxWidth = Math.max(...textWidths) + textOffsetX + legendSqSize + 1;
 
   var legend = svg.selectAll(".legend")
@@ -321,9 +323,9 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
 // Doesn't seem to be a significantly better way to do it; see https://stackoverflow.com/questions/29031659/calculate-width-of-text-before-drawing-the-text
 function computeTextWidths(input_text) {
   var textWidths = [];
-  var g = svg.append('g')
+  var g = svg.append("g")
     .attr("id", "placeholder")
-    .selectAll('.placeholder')
+    .selectAll(".placeholder")
     .data(input_text)
     .enter()
     .append("text")
@@ -336,22 +338,73 @@ function computeTextWidths(input_text) {
   return textWidths;
 }
 
-function setMouseoverText() {
+// Resets clicks of all indices except the specified one to ignore
+function resetClicks(ignore) {
+  for (let i = 0; i < clicked.length; i++) { if (i == ignore) continue; clicked[i] = false; }
+}
+function setPiechartMouseoverText() {
   var g = svg.selectAll("g");
   var label = d3.arc().outerRadius(radius*1.5).innerRadius(radius*1.5);
   var arcTextOffsetX = 25, arcTextOffsetY = 5;
-  g.selectAll(".arc").on("mouseover", function(d,i){
-    this.parentNode.appendChild(this); // move to end, so that text does not get obscured (due to order in which SVG elements render)
+  var addfun = function(d,i,elem,isClick){
+    elem.parentNode.appendChild(elem); // move to end, so that text does not get obscured (due to order in which SVG elements render)
+    var arc_index = parseInt(d3.select(elem).attr("id").substring(4));
+    d3.select(elem).selectAll("path").attr("fill", hoverizeColor(colors[arc_index]));
+    if (!clicked[arc_index]) {
+      d3.select(elem).append("text")
+                     .attr("transform", function(d){
+                        var cent = label.centroid(d);
+                        cent[0] -= arcTextOffsetX;
+                        cent[1] -= arcTextOffsetY;
+                        return "translate(" + cent + ")"; })
+                     .attr("fill", "black")
+                     .attr("style", "pointer-events: none; user-select: none;")
+                     .text(function(d){ return (showSecsOnly ? d.data + "s" : timeString(d.data, true)) + " (" + (d.data/sessLength*100).toFixed(1) + "%)"; });
+    }
+  };
+  var delfun = function(d,i,elem,isClick){
+    if (isClick || !clicked[i]) {
+      d3.select(elem)
+        .select("text")
+        .remove();
+    }
+    d3.select(elem).selectAll("path").attr("fill", colors[i]);
+  };
+  g.selectAll(".arc").on("mouseover", function(d,i) { addfun(d,i,this,false); });
+  g.selectAll(".arc").on("mouseout", function(d,i) { delfun(d,i,this,false); });
+  g.selectAll(".arc").on("click", function(d,i){
     var arc_index = parseInt(d3.select(this).attr("id").substring(4));
-    d3.select(this).selectAll("path").attr("fill", hoverizeColor(colors[i]));
-    d3.select(this).append("text")
-                   .attr("transform", function(d){
-                      var cent = label.centroid(d);
-                      cent[0] -= arcTextOffsetX;
-                      cent[1] -= arcTextOffsetY;
-                      return "translate(" + cent + ")"; })
-                   .attr("fill", "black")
-                   .attr("style", "pointer-events: none; user-select: none;")
-                   .text(function(d){ return (showSecsOnly ? d.data + "s" : timeString(d.data, true)) + " (" + (d.data/sessLength*100).toFixed(1) + "%)"; });
+    if (!d3.event.shiftKey) {
+      resetClicks(arc_index);
+      svg.selectAll("g").selectAll(".arc").selectAll("text").remove();
+    }
+    if (clicked[arc_index]) {
+      delfun(d, i, this, true);
+      clicked[arc_index] = false;
+    }
+    else {
+      addfun(d, i, this, true);
+      clicked[arc_index] = true;
+    }
   });
 }
+
+d3.select("body").on("keydown", function() {
+  if (d3.event.keyCode == 8) {
+    var anyClicked = false;
+    for (let i = 0; i < clicked.length; i++) {
+      anyClicked = anyClicked || clicked[i];
+      if (clicked[i]) clickedSet.add(categoryNames[i]);
+    }
+    if (anyClicked) {
+      if (!showTasks) { // Intentionally do not delete tasks directly in 'basic' mode
+        resetClicks(-1);
+        svg.selectAll("g").selectAll(".arc").selectAll("text").remove();
+      }
+      else {
+        loaded = false;
+        processData();
+      }
+    }
+  }
+});

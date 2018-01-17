@@ -43,6 +43,8 @@ would like to shut down the visualization server for any reason, you may run
 the kill\_server.sh script (but please do not do so while the main application
 is running).
 
+Note: Feel free to close your computer while the application is running!
+
 ## Installation
 To download this application on Mac, clone the git directory and open the
 .xcodeproj file and build it in XCode (hit the triangular "play" button in the
