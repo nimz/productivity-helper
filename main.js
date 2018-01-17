@@ -1,12 +1,8 @@
 var w = 1000, h = 500;
 var radius = h / 5, innerRadius = radius / 2;
-var svg_div = d3.select("body")
-                .append("div")
-                .attr("align", "center")
-                .attr("style", "overflow-y: auto; overflow-x: auto;");
-var svg = svg_div.append("svg")
-                 .attr("height", h)
-                 .attr("width", w);
+var svg = d3.select("#svg_div").append("svg")
+                               .attr("height", h)
+                               .attr("width", w);
 
 var cleared = [false, false];
 function clearInput(i) {
@@ -38,6 +34,13 @@ function toggleMode() {
 var showSecsOnly = false;
 function toggleShow() {
   showSecsOnly = !showSecsOnly;
+}
+
+function reset() {
+  loaded = false;
+  resetClicks(-1);
+  clickedSet = new Set();
+  processData();
 }
 
 function leadingZero(i) {
@@ -318,6 +321,7 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
         .attr("y", legendSqSize / 2 + textOffsetY)
         .attr("fill", "black")
         .text(function(d){ return d[0]; });
+  d3.select("#reset_button").attr("style", "");
 }
 
 // Doesn't seem to be a significantly better way to do it; see https://stackoverflow.com/questions/29031659/calculate-width-of-text-before-drawing-the-text
@@ -359,16 +363,15 @@ function setPiechartMouseoverText() {
                         return "translate(" + cent + ")"; })
                      .attr("fill", "black")
                      .attr("style", "pointer-events: none; user-select: none;")
+                     .attr("class", isClick ? "click" : "mouseover")
                      .text(function(d){ return (showSecsOnly ? d.data + "s" : timeString(d.data, true)) + " (" + (d.data/sessLength*100).toFixed(1) + "%)"; });
     }
   };
   var delfun = function(d,i,elem,isClick){
-    if (isClick || !clicked[i]) {
-      d3.select(elem)
-        .select("text")
-        .remove();
-    }
-    d3.select(elem).selectAll("path").attr("fill", colors[i]);
+    d3.select(elem)
+      .selectAll("." + (isClick ? "click" : "mouseover"))
+      .remove();
+    if (!isClick) d3.select(elem).selectAll("path").attr("fill", colors[i]);
   };
   g.selectAll(".arc").on("mouseover", function(d,i) { addfun(d,i,this,false); });
   g.selectAll(".arc").on("mouseout", function(d,i) { delfun(d,i,this,false); });
