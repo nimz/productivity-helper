@@ -4,16 +4,6 @@ var svg = d3.select("#svg_div").append("svg")
                                .attr("height", h)
                                .attr("width", w);
 
-function clearInput(i) {
-  var selectedId = (i == 0) ? "#from" : "#to";
-  d3.select(selectedId).property("value", "");
-}
-
-function restoreInput(i) {
-  var selectedId = (i == 0) ? "#from" : "#to";
-  d3.select(selectedId).property("value", lastDateInput[i]);
-}
-
 var lastDateInput = ["", ""], lastDateInputOrig;
 var lastDateInputN = [-1, -1];
 function validateDate(i) {
@@ -21,16 +11,27 @@ function validateDate(i) {
   var date = timeStr(new Date(Date.parse(datestr)), fullYear=false, dateOnly=true);
   if (date !== datestr) {
     alert("Please enter a valid date in mm/dd/yy format.");
-    restoreInput(i);
+    d3.select(selectedId).property("value", lastDateInput[i]);
     return false;
   }
   lastDateInput[i] = datestr;
   lastDateInputN[0] = Date.parse(lastDateInput[0]);
   lastDateInputN[1] = Date.parse(lastDateInput[1]); // update both, for simplicity
+  if (lastDateInputN[1] < lastDateInputN[0]) {
+    if (i == 0)
+      alert("Start date should not be after end date!");
+    else
+      alert("End date should not be before start date!");
+    lastDateInput[i] = lastDateInput[1-i];
+    d3.select(selectedId).property("value", lastDateInput[i]);
+    lastDateInputN[i] = lastDateInputN[1-i];
+  }
   loaded = false;
   processData();
   return true;
 }
+d3.select("#from").on("change", function(){ validateDate(0) });
+d3.select("#to").on("change", function(){ validateDate(1) });
 
 var workInfo, workTotals1, workTotals2, tasks, categoryNames, sessLength, loaded = false, colors, clicked, clickedSet = new Set();
 var showTasks = true;
@@ -38,11 +39,13 @@ function toggleMode() {
   showTasks = !showTasks;
   processData();
 }
+d3.select("#show_tasks").on("click", toggleMode);
 
 var showSecsOnly = false;
 function toggleShow() {
   showSecsOnly = !showSecsOnly;
 }
+d3.select("#show_secs").on("click", toggleShow);
 
 function reset() {
   lastDateInput = lastDateInputOrig.slice();
@@ -54,6 +57,7 @@ function reset() {
   clickedSet = new Set();
   processData();
 }
+d3.select("#reset_button").on("click", reset);
 
 function leadingZero(i) {
   return (i < 10) ? "0" + i : i;

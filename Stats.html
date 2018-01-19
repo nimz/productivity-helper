@@ -18,23 +18,23 @@
 
 <p id="tot_waste_time">Total Time Wasted: </p>
 
-<p>From: <input type="text" id="from" value="mm/dd/yy" onchange="validateDate(0)" />
-   To:   <input type="text" id="to"   value="mm/dd/yy" onchange="validateDate(1)" /></p>
+<p>From: <input type="text" id="from" value="mm/dd/yy" />
+   To:   <input type="text" id="to"   value="mm/dd/yy" /></p>
 
 <div>
-  <input type="checkbox" id="showTasks" value="showtasks" onclick="toggleMode()" checked>
-  <label for="showTasks" style="user-select: none;">Show breakdown by task</label>
+  <input type="checkbox" id="show_tasks" value="showtasks" checked>
+  <label for="show_tasks" style="user-select: none;">Show breakdown by task</label>
 
-  <input type="checkbox" id="showSecs" value="showsecs" onclick="toggleShow()">
-  <label for="showSecs" style="user-select: none;">Show times in seconds only</label>
+  <input type="checkbox" id="show_secs" value="showsecs">
+  <label for="show_secs" style="user-select: none;">Show times in seconds only</label>
 </div>
 
 <div id="svg_div" align="center" style="overflow-y: auto; overflow-x: auto;"></div>
 
-<div align="center"><button type="button" id="reset_button" title="Restore Hidden Tasks and Default Dates" style="visibility: hidden;" onclick="reset()">Reset</button></div>
+<div align="center"><button type="button" id="reset_button" title="Restore Hidden Tasks and Default Dates" style="visibility: hidden;">Reset</button></div>
 
 <script src="scripts/d3.v4.min.js"></script>
-<script id="varDefs" src="Statistics.js"></script>
+<script id="var_defs" src="Statistics.js"></script>
 <script src="scripts/main.js"></script>
 </body>
 </html>
