@@ -18,8 +18,8 @@
 
 <p id="tot_waste_time">Total Time Wasted: </p>
 
-<p>From: <input type="text" id="from" value="mm/dd/yy" onclick="clearInput(0)" onchange="validateDate(0)" />
-   To:   <input type="text" id="to"   value="mm/dd/yy" onclick="clearInput(1)" onchange="validateDate(1)" /></p>
+<p>From: <input type="text" id="from" value="mm/dd/yy" onchange="validateDate(0)" />
+   To:   <input type="text" id="to"   value="mm/dd/yy" onchange="validateDate(1)" /></p>
 
 <div>
   <input type="checkbox" id="showTasks" value="showtasks" onclick="toggleMode()" checked>
@@ -31,7 +31,7 @@
 
 <div id="svg_div" align="center" style="overflow-y: auto; overflow-x: auto;"></div>
 
-<div align="center"><button type="button" id="reset_button" style="visibility: hidden;" onclick="reset()">Reset (Restore Hidden Tasks)</button></div>
+<div align="center"><button type="button" id="reset_button" title="Restore Hidden Tasks and Default Dates" style="visibility: hidden;" onclick="reset()">Reset</button></div>
 
 <script src="scripts/d3.v4.min.js"></script>
 <script id="varDefs" src="Statistics.js"></script>

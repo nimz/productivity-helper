@@ -4,24 +4,32 @@ var svg = d3.select("#svg_div").append("svg")
                                .attr("height", h)
                                .attr("width", w);
 
-var cleared = [false, false];
 function clearInput(i) {
-  if (cleared[i]) return;
-  cleared[i] = true;
-  if (i == 0) d3.select("#from").attr("value", "");
-  else d3.select("#to").attr("value", "");
+  var selectedId = (i == 0) ? "#from" : "#to";
+  d3.select(selectedId).property("value", "");
 }
 
+function restoreInput(i) {
+  var selectedId = (i == 0) ? "#from" : "#to";
+  d3.select(selectedId).property("value", lastDateInput[i]);
+}
+
+var lastDateInput = ["", ""], lastDateInputOrig;
+var lastDateInputN = [-1, -1];
 function validateDate(i) {
-  var datestr;
-  if (i == 0) datestr = d3.select("#from").property("value");
-  else datestr = d3.select("#to").property("value");
-  datestr = datestr.trim();
-  var vals = datestr.split("/");
-  if (vals.length != 3) {
-    alert("Please enter a valid date.");
-    return;
+  var selectedId = (i == 0) ? "#from" : "#to", datestr = d3.select(selectedId).property("value").trim();
+  var date = timeStr(new Date(Date.parse(datestr)), fullYear=false, dateOnly=true);
+  if (date !== datestr) {
+    alert("Please enter a valid date in mm/dd/yy format.");
+    restoreInput(i);
+    return false;
   }
+  lastDateInput[i] = datestr;
+  lastDateInputN[0] = Date.parse(lastDateInput[0]);
+  lastDateInputN[1] = Date.parse(lastDateInput[1]); // update both, for simplicity
+  loaded = false;
+  processData();
+  return true;
 }
 
 var workInfo, workTotals1, workTotals2, tasks, categoryNames, sessLength, loaded = false, colors, clicked, clickedSet = new Set();
@@ -37,8 +45,12 @@ function toggleShow() {
 }
 
 function reset() {
-  loaded = false;
+  lastDateInput = lastDateInputOrig.slice();
+  lastDateInputN = [-1, -1];
+  d3.select("#from").property("value", lastDateInput[0]);
+  d3.select("#to").property("value", lastDateInput[1]);
   resetClicks(-1);
+  loaded = false;
   clickedSet = new Set();
   processData();
 }
@@ -48,15 +60,19 @@ function leadingZero(i) {
 }
 
 // adapted from http://stackoverflow.com/questions/4522213/can-someone-explain-this-javascript-real-time-clock-to-me
-function currentTimeStr() {
-  var today = new Date();
-  var mo = leadingZero(today.getMonth()+1),
-      d = leadingZero(today.getDate()),
-      y = today.getFullYear(),
-      h = leadingZero(today.getHours()),
-      mn = leadingZero(today.getMinutes()),
-      s = leadingZero(today.getSeconds());
-  return mo + "/" + d + "/" + y + " " + h + ":" + mn + ":" + s;
+function timeStr(dateObj, fullYear=true, dateOnly=false) {
+  var mo = leadingZero(dateObj.getMonth()+1),
+      d = leadingZero(dateObj.getDate()),
+      y = dateObj.getFullYear(),
+      h = leadingZero(dateObj.getHours()),
+      mn = leadingZero(dateObj.getMinutes()),
+      s = leadingZero(dateObj.getSeconds());
+  if (!fullYear) y = String(y).substring(2);
+  return mo + "/" + d + "/" + y + ((dateOnly) ? "" : (" " + h + ":" + mn + ":" + s));
+}
+
+function currentTimeStr(fullYear=true) {
+  return timeStr(new Date(), fullYear);
 }
 
 function startTime() {
@@ -69,13 +85,12 @@ startTime();
 
 var re = new RegExp("(?<!\\\\),");
 var fulldata;
-var bad_lines = [];
 // avoid caching
 d3.text("Statistics.txt?" + Math.floor(Math.random() * 9999), function(d) {
   var lines = d.split("\n");
   var index = 0; // skip first line
   var firstSess = true;
-  var sessions = [], curSessData = [];
+  var sessions = [], curSessData = [], bad_lines = [];
   var curSessDict = {};
   var curStart, curEnd;
   while (index++ < lines.length - 1) { // Skip first line
@@ -112,7 +127,7 @@ d3.text("Statistics.txt?" + Math.floor(Math.random() * 9999), function(d) {
         actType = 1;
       }
       else actType = 2;
-      if (activity.length < 3) activity.push(currentTimeStr());
+      if (activity.length < 3) activity.push(currentTimeStr(false));
       var startTime = Date.parse(activity[1]), endTime = Date.parse(activity[2]);
       var duration = (endTime - startTime)/1000;
       activity.push(actType);
@@ -154,11 +169,11 @@ function rgbToHex(d) {
   var r = d["r"], g = d["g"], b = d["b"];
   return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }
-var lf = 1.2, la = 5;
-function hoverizeColor(c) {
+
+function hoverizeColor(c, lf=1.2, la=5) {
   var cur_rgb = hexToRgb(c);
   for (var key in cur_rgb) {
-    cur_rgb[key] = Math.min(255, Math.round(cur_rgb[key] * lf) + la);
+    cur_rgb[key] = Math.max(Math.min(255, Math.round(cur_rgb[key] * lf + la)), 0);
   }
   return rgbToHex(cur_rgb);
 }
@@ -227,11 +242,35 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
     workTotals2 = [];
     tasks = [];
     sessLength = 0;
+    if (fulldata.length > 0 && lastDateInput[0] === "") {
+      lastDateInput[0] = fulldata[0][2][1].trim().split(" ")[0];
+      d3.select("#from").property("value", lastDateInput[0]);
+      var lastSess = fulldata[fulldata.length-1];
+      var lastTask = lastSess[lastSess.length-1];
+      lastDateInput[1] = lastTask[2].trim().split(" ")[0];
+      d3.select("#to").property("value", lastDateInput[1]);
+      lastDateInputOrig = lastDateInput.slice();
+    }
+    var shouldBreak = false;
     for (let i = 0; i < fulldata.length; i++) {
       var session = fulldata[i];
       for (let j = 2; j < session.length; j++) {
         var activityName = toTitleCase(session[j][0]);
         if (clickedSet.has(activityName)) continue;
+        if (lastDateInputN[0] != -1 || lastDateInputN[1] != -1) {
+          var startDay = Date.parse(session[j][1].trim().split(" ")[0]),
+              endDay = Date.parse(session[j][2].trim().split(" ")[0]);
+          if (endDay < lastDateInputN[0]) // activity ends before the desired start date
+            continue;
+          if (startDay > lastDateInputN[1]) { // activity starts after the desired end date (and so all subsequent ones do too)
+            shouldBreak = true;
+            break;
+          }
+          if (startDay < lastDateInputN[0]) // activity starts before the desired start date, but ends during/after it
+            session[j][4] -= (lastDateInputN[0] - Date.parse(session[j][1])) / 1000;
+          if (endDay > lastDateInputN[1]) // activity ends after desired end date, but starts during/before it
+            session[j][4] -= (Date.parse(session[j][2]) - lastDateInputN[1]) / 1000;
+        }
         workTotals1[session[j][3]] += session[j][4];
         if (activityName in workInfo)
           workInfo[activityName] += session[j][4];
@@ -239,6 +278,7 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
           workInfo[activityName] = session[j][4];
         sessLength += session[j][4];
       }
+      if (shouldBreak) break;
     }
     for (var key in workInfo) {
       if (key === "Break" || key === "Wasted") continue;
@@ -258,6 +298,10 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
   var workData = showTasks ? workTotals2 : workTotals1;
   colors = showTasks ? d3.schemeCategory20 : d3.schemeCategory10;
   var categories = showTasks ? tasks : ["Work Time", "Break Time", "Wasted Time"].map(function(s,i){ return [s, workTotals1[i]]; });
+  if (showTasks) {
+    for (let i = 20; i < categories.length; i++) // add extra colors as necessary
+      colors.push(hoverizeColor(colors[i-20], lf=0.7, la=-7.5));
+  }
   svg.selectAll("g").remove();
   var g = svg.append("g").attr("transform", "translate(" + w/4 + ", " + h/2 + ")");
   var pie = d3.pie().sort(null);
