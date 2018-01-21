@@ -313,7 +313,7 @@ int numDays = 0;
     if ([prefController doConfirm]) {
         NSAlert *alert = [[NSAlert alloc] init];
         [alert setMessageText:@"Are you sure you want to stop this session?"];
-        [alert addButtonWithTitle:@"Quit"];
+        [alert addButtonWithTitle:@"Stop Session"];
         [alert addButtonWithTitle:@"Cancel"];
         NSInteger selection = [alert runModal];
         if (selection != NSAlertFirstButtonReturn) {

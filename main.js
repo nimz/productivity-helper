@@ -12,8 +12,9 @@ function validateDate(i) {
   if (date !== datestr) {
     alert("Please enter a valid date in mm/dd/yy format.");
     d3.select(selectedId).property("value", lastDateInput[i]);
-    return false;
+    return;
   }
+  if (lastDateInput[i] === datestr) return; // no change
   lastDateInput[i] = datestr;
   lastDateInputN[0] = Date.parse(lastDateInput[0]);
   lastDateInputN[1] = Date.parse(lastDateInput[1]); // update both, for simplicity
@@ -28,12 +29,11 @@ function validateDate(i) {
   }
   loaded = false;
   processData();
-  return true;
 }
-d3.select("#from").on("change", function(){ validateDate(0) });
-d3.select("#to").on("change", function(){ validateDate(1) });
+d3.select("#from").on("change", function(){ validateDate(0); });
+d3.select("#to").on("change", function(){ validateDate(1); });
 
-var workInfo, workTotals1, workTotals2, tasks, categoryNames, sessLength, loaded = false, colors, clicked, clickedSet = new Set();
+var workInfo, workTotals1, workTotals2, tasks, categoryNames, sessLength, loaded = false, colors, clicked, deletedSet = new Set();
 var showTasks = true;
 function toggleMode() {
   showTasks = !showTasks;
@@ -52,12 +52,29 @@ function reset() {
   lastDateInputN = [-1, -1];
   d3.select("#from").property("value", lastDateInput[0]);
   d3.select("#to").property("value", lastDateInput[1]);
-  resetClicks(-1);
   loaded = false;
-  clickedSet = new Set();
+  deletedSet = new Set();
   processData();
 }
 d3.select("#reset_button").on("click", reset);
+
+function thisweek() {
+  var loadCopy = new Date(loadDate.getTime());
+  var day = loadCopy.getDay();
+  loadCopy.setHours(0); loadCopy.setMinutes(0); loadCopy.setSeconds(0); loadCopy.setMilliseconds(0);
+  var weekStart = new Date(loadCopy.getTime()), weekEnd = new Date(loadCopy.getTime());
+  weekStart.setDate(loadCopy.getDate() - day);
+  weekEnd.setDate(loadCopy.getDate() + (6-day));
+  var fromStr = timeStr(weekStart, false, true), toStr = timeStr(weekEnd, false, true);
+  if (lastDateInput[0] === fromStr && lastDateInput[1] === toStr) return; // no change
+  lastDateInput = [fromStr, toStr];
+  lastDateInputN = [weekStart.valueOf(), weekEnd.valueOf()];
+  d3.select("#from").property("value", lastDateInput[0]);
+  d3.select("#to").property("value", lastDateInput[1]);
+  loaded = false;
+  processData();
+}
+d3.select("#week_button").on("click", thisweek);
 
 function leadingZero(i) {
   return (i < 10) ? "0" + i : i;
@@ -75,15 +92,15 @@ function timeStr(dateObj, fullYear=true, dateOnly=false) {
   return mo + "/" + d + "/" + y + ((dateOnly) ? "" : (" " + h + ":" + mn + ":" + s));
 }
 
+var loadDate = null;
 function currentTimeStr(fullYear=true) {
-  return timeStr(new Date(), fullYear);
+  if (loadDate == null)
+    loadDate = new Date();
+  return timeStr(loadDate, fullYear);
 }
 
 function startTime() {
-  document.getElementById("time").innerHTML = currentTimeStr();
-  /*setTimeout(function() {
-      startTime()
-  }, 250);*/ // right now, we only load the data once!
+  d3.select("#time").html(currentTimeStr());
 }
 startTime();
 
@@ -260,7 +277,7 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
       var session = fulldata[i];
       for (let j = 2; j < session.length; j++) {
         var activityName = toTitleCase(session[j][0]);
-        if (clickedSet.has(activityName)) continue;
+        if (deletedSet.has(activityName)) continue;
         if (lastDateInputN[0] != -1 || lastDateInputN[1] != -1) {
           var startDay = Date.parse(session[j][1].trim().split(" ")[0]),
               endDay = Date.parse(session[j][2].trim().split(" ")[0]);
@@ -438,6 +455,12 @@ function setPiechartMouseoverText() {
       clicked[arc_index] = true;
     }
   });
+  d3.select("body").on("click", function(){
+    if (d3.event.target.tagName !== "path") {
+      resetClicks(-1);
+      svg.selectAll("g").selectAll(".arc").selectAll("text").remove();
+    }
+  });
 }
 
 d3.select("body").on("keydown", function() {
@@ -445,7 +468,7 @@ d3.select("body").on("keydown", function() {
     var anyClicked = false;
     for (let i = 0; i < clicked.length; i++) {
       anyClicked = anyClicked || clicked[i];
-      if (clicked[i]) clickedSet.add(categoryNames[i]);
+      if (clicked[i]) deletedSet.add(categoryNames[i]);
     }
     if (anyClicked) {
       if (!showTasks) { // Intentionally do not delete tasks directly in 'basic' mode
