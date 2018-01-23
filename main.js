@@ -1,8 +1,9 @@
-var w = 1000, h = 500;
-var radius = h / 5, innerRadius = radius / 2;
-var svg = d3.select("#svg_div").append("svg")
-                               .attr("height", h)
-                               .attr("width", w);
+var w = 1000, div_h = 504, div_h_true = div_h + 4; // offset of 4 to avoid needless scrollbar in svg height=504 case
+var radius = w / 10, innerRadius = radius / 2;
+var svg_div = d3.select("#svg_div");
+svg_div.attr("style", "overflow-y:auto; overflow-x:auto; height:" + div_h_true + "px");
+var svg = svg_div.append("svg")
+                 .attr("width", w);
 
 var lastDateInput = ["", ""], lastDateInputOrig;
 var lastDateInputN = [-1, -1];
@@ -116,7 +117,7 @@ d3.text("Statistics.txt?" + Math.floor(Math.random() * 9999), function(d) {
   var curStart, curEnd;
   while (index++ < lines.length - 1) { // Skip first line
     var line = lines[index];
-    if (line.trim() === "") continue;
+    if (line.trim() === "" || line[0] === "#") continue; // skip comments and blank lines
     var splitLine = line.split(" ");
     var firstWord = splitLine[0];
     if (firstWord === "Session") {
@@ -323,8 +324,14 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
     for (let i = 20; i < categories.length; i++) // add extra colors as necessary
       colors.push(hoverizeColor(colors[i-20], lf=0.7, la=-7.5));
   }
+
+  var legendSqSize = Math.min(20, Math.max(16, 41 - categories.length)), legendSpacing = legendSqSize / 5, height = legendSqSize + legendSpacing;
+  var svg_h = Math.max(div_h, height * categories.length);
+  svg.attr("height", svg_h);
+  svg_div.node().scrollTop = (svg_h - div_h) / 2;
+
   svg.selectAll("g").remove();
-  var g = svg.append("g").attr("transform", "translate(" + w/4 + ", " + h/2 + ")");
+  var g = svg.append("g").attr("transform", "translate(" + w/4 + ", " + svg_h/2 + ")");
   var pie = d3.pie().sort(null);
   var arc = g.selectAll(".arc")
              .data(pie(workData))
@@ -341,14 +348,13 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
 
   setPiechartMouseoverText();
 
-  var legendSqSize = 20, legendSpacing = 4;
-  var textOffsetX = 4, textOffsetY = 5; // adding textOffsetY = 5 seems to center text vertically w.r.t. legend square
+  var legendTextOffsetX = 4, legendTextOffsetY = 5; // adding legendTextOffsetY = 5 seems to center text vertically w.r.t. legend square
 
   categoryNames = [];
   for (let i = 0; i < categories.length; i++) categoryNames.push(categories[i][0]);
   clicked = new Array(categoryNames.length).fill(false);
 
-  var textWidths = computeTextWidths(categoryNames), maxWidth = Math.max(...textWidths) + textOffsetX + legendSqSize + 1;
+  var textWidths = computeTextWidths(categoryNames), maxWidth = Math.max(...textWidths) + legendTextOffsetX + legendSqSize + 1;
 
   var legend = svg.selectAll(".legend")
                   .data(categories)
@@ -356,9 +362,8 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
                   .append("g")
                   .attr("class", "legend")
                   .attr("transform", function(d,i){
-                    var height = legendSqSize + legendSpacing;
                     var offset = categories.length * height / 2;
-                    var vert = i * height - offset + h/2;
+                    var vert = i * height - offset + svg_h/2;
                     var horz = Math.min(w * 4/5, w - maxWidth);
                     return "translate(" + horz + "," + vert + ")";
                   });
@@ -375,15 +380,15 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
             .attr("style", "pointer-events: none; user-select: none;")
             .attr("class", "hovertext")
             .text(function(d){ return (showSecsOnly ? d[1] + "s" : timeString(d[1], true)) + " (" + (d[1]/sessLength*100).toFixed(1) + "%)"; })
-            .attr("transform", function(d){ return "translate(-" + (this.getComputedTextLength() + textOffsetX) + ", " + (legendSqSize / 2 + textOffsetY) + ")"; });
+            .attr("transform", function(d){ return "translate(-" + (this.getComputedTextLength() + legendTextOffsetX) + ", " + (legendSqSize / 2 + legendTextOffsetY) + ")"; });
         })
         .on("mouseout", function(d,i){
           d3.select(this.parentNode).selectAll(".hovertext").remove();
           d3.select(this).style("fill", colors[i]);
         });
   legend.append("text")
-        .attr("x", legendSqSize + textOffsetX)
-        .attr("y", legendSqSize / 2 + textOffsetY)
+        .attr("x", legendSqSize + legendTextOffsetX)
+        .attr("y", legendSqSize / 2 + legendTextOffsetY)
         .attr("fill", "black")
         .text(function(d){ return d[0]; });
   d3.select("#reset_button").attr("style", "");
