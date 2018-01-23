@@ -43,29 +43,43 @@ function toggleMode() {
 d3.select("#show_tasks").on("click", toggleMode);
 
 var showSecsOnly = false;
-function toggleShow() {
+function toggleShowSecs() {
   showSecsOnly = !showSecsOnly;
 }
-d3.select("#show_secs").on("click", toggleShow);
+d3.select("#show_secs").on("click", toggleShowSecs);
 
-function reset() {
+var tot_times = [0, 0, 0];
+var showDays = false;
+function toggleShowDays() {
+  showDays = !showDays;
+  for (let i = 0; i < 3; i++)
+    d3.select("#span_" + i).text(timeString(tot_times[i], condensed=false, days=showDays));
+}
+d3.selectAll(".time_div").selectAll("span").on("click", toggleShowDays);
+d3.selectAll(".time_div").append("span").attr("class", "tot_time_span").attr("id", function(d, i){ return "span_" + i; });
+
+function reset(dateonly=false) {
   lastDateInput = lastDateInputOrig.slice();
   lastDateInputN = [-1, -1];
   d3.select("#from").property("value", lastDateInput[0]);
   d3.select("#to").property("value", lastDateInput[1]);
+  if (!dateonly) {
+    showSecsOnly = false;
+    showDays = false;
+    deletedSet = new Set();
+  }
   loaded = false;
-  deletedSet = new Set();
   processData();
 }
 d3.select("#reset_button").on("click", reset);
 
-function thisweek() {
+function setWeek(offset=0) {
   var loadCopy = new Date(loadDate.getTime());
   var day = loadCopy.getDay();
   loadCopy.setHours(0); loadCopy.setMinutes(0); loadCopy.setSeconds(0); loadCopy.setMilliseconds(0);
   var weekStart = new Date(loadCopy.getTime()), weekEnd = new Date(loadCopy.getTime());
-  weekStart.setDate(loadCopy.getDate() - day);
-  weekEnd.setDate(loadCopy.getDate() + (6-day));
+  weekStart.setDate(loadCopy.getDate() - day - offset);
+  weekEnd.setDate(loadCopy.getDate() + (6-day) - offset);
   var fromStr = timeStr(weekStart, false, true), toStr = timeStr(weekEnd, false, true);
   if (lastDateInput[0] === fromStr && lastDateInput[1] === toStr) return; // no change
   lastDateInput = [fromStr, toStr];
@@ -75,7 +89,9 @@ function thisweek() {
   loaded = false;
   processData();
 }
-d3.select("#week_button").on("click", thisweek);
+d3.select("#this_week_button").on("click", setWeek);
+d3.select("#last_week_button").on("click", function(){ setWeek(7); });
+d3.select("#total_button").on("click", function(){ reset(dateonly=true); });
 
 function leadingZero(i) {
   return (i < 10) ? "0" + i : i;
@@ -101,7 +117,7 @@ function currentTimeStr(fullYear=true) {
 }
 
 function startTime() {
-  d3.select("#time").html(currentTimeStr());
+  d3.select("#time").text(currentTimeStr());
 }
 startTime();
 
@@ -238,11 +254,11 @@ const toTitleCase = (str) => {
 }
 
 var names_s = ["d", "h", "m", "s"], names_l = [" Day", " Hour", " Minute", " Second"];
-function timeString(num_secs, condensed=false) {
+function timeString(num_secs, condensed=true, days=false) {
   var nums = [0, 0, 0, 0];
   var names = condensed ? names_s : names_l;
-  nums[0] = Math.floor(num_secs / 86400);
-  nums[1] = Math.floor((num_secs % 86400) / 3600);
+  nums[0] = days ? Math.floor(num_secs / 86400) : 0;
+  nums[1] = Math.floor((days ? num_secs % 86400 : num_secs) / 3600);
   nums[2] = Math.floor((num_secs % 3600) / 60);
   nums[3] = num_secs % 60;
   var retval = "";
@@ -277,11 +293,12 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
     for (let i = 0; i < fulldata.length; i++) {
       var session = fulldata[i];
       for (let j = 2; j < session.length; j++) {
-        var activityName = toTitleCase(session[j][0]);
+        var activity = session[j].slice();
+        var activityName = toTitleCase(activity[0]);
         if (deletedSet.has(activityName)) continue;
         if (lastDateInputN[0] != -1 || lastDateInputN[1] != -1) {
-          var startDay = Date.parse(session[j][1].trim().split(" ")[0]),
-              endDay = Date.parse(session[j][2].trim().split(" ")[0]);
+          var startDay = Date.parse(activity[1].trim().split(" ")[0]),
+              endDay = Date.parse(activity[2].trim().split(" ")[0]);
           if (endDay < lastDateInputN[0]) // activity ends before the desired start date
             continue;
           if (startDay > lastDateInputN[1]) { // activity starts after the desired end date (and so all subsequent ones do too)
@@ -289,16 +306,16 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
             break;
           }
           if (startDay < lastDateInputN[0]) // activity starts before the desired start date, but ends during/after it
-            session[j][4] -= (lastDateInputN[0] - Date.parse(session[j][1])) / 1000;
+            activity[4] -= (lastDateInputN[0] - Date.parse(activity[1])) / 1000; // difference between start of date range and beginning of activity
           if (endDay > lastDateInputN[1]) // activity ends after desired end date, but starts during/before it
-            session[j][4] -= (Date.parse(session[j][2]) - lastDateInputN[1]) / 1000;
+            activity[4] -= (Date.parse(activity[2]) - (lastDateInputN[1] + 86400000)) / 1000; // difference between ending of activity and end of date range
         }
-        workTotals1[session[j][3]] += session[j][4];
+        workTotals1[activity[3]] += activity[4];
         if (activityName in workInfo)
-          workInfo[activityName] += session[j][4];
+          workInfo[activityName] += activity[4];
         else
-          workInfo[activityName] = session[j][4];
-        sessLength += session[j][4];
+          workInfo[activityName] = activity[4];
+        sessLength += activity[4];
       }
       if (shouldBreak) break;
     }
@@ -312,9 +329,9 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
     workTotals2.push(workTotals1[1]);
     workTotals2.push(workTotals1[2]);
     loaded = true;
-    d3.select("#tot_time").node().innerHTML = "Total Time: " + timeString(sessLength);
-    d3.select("#tot_work_time").node().innerHTML = "Total Time Working: " + timeString(workTotals1[0]);
-    d3.select("#tot_waste_time").node().innerHTML = "Total Time Wasted: " + timeString(workTotals1[2]);
+    tot_times = [sessLength, workTotals1[0], workTotals1[2]];
+    for (let i = 0; i < 3; i++)
+      d3.select("#span_" + i).text(timeString(tot_times[i], condensed=false, days=showDays));
   }
 
   var workData = showTasks ? workTotals2 : workTotals1;
@@ -379,7 +396,7 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
             .attr("fill", "black")
             .attr("style", "pointer-events: none; user-select: none;")
             .attr("class", "hovertext")
-            .text(function(d){ return (showSecsOnly ? d[1] + "s" : timeString(d[1], true)) + " (" + (d[1]/sessLength*100).toFixed(1) + "%)"; })
+            .text(function(d){ return (showSecsOnly ? d[1] + "s" : timeString(d[1])) + " (" + (d[1]/sessLength*100).toFixed(1) + "%)"; })
             .attr("transform", function(d){ return "translate(-" + (this.getComputedTextLength() + legendTextOffsetX) + ", " + (legendSqSize / 2 + legendTextOffsetY) + ")"; });
         })
         .on("mouseout", function(d,i){
@@ -434,7 +451,7 @@ function setPiechartMouseoverText() {
                      .attr("fill", "black")
                      .attr("style", "pointer-events: none; user-select: none;")
                      .attr("class", isClick ? "click" : "mouseover")
-                     .text(function(d){ return (showSecsOnly ? d.data + "s" : timeString(d.data, true)) + " (" + (d.data/sessLength*100).toFixed(1) + "%)"; });
+                     .text(function(d){ return (showSecsOnly ? d.data + "s" : timeString(d.data)) + " (" + (d.data/sessLength*100).toFixed(1) + "%)"; });
     }
   };
   var delfun = function(d,i,elem,isClick){
@@ -468,7 +485,7 @@ function setPiechartMouseoverText() {
   });
 }
 
-d3.select("body").on("keydown", function() {
+d3.select("body").on("keydown", function(){
   if (d3.event.keyCode == 8) {
     var anyClicked = false;
     for (let i = 0; i < clicked.length; i++) {

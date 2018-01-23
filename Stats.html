@@ -12,15 +12,20 @@
 
 <p id="file_link">Data File: <a href="Statistics.txt">Statistics.txt</a></p>
 
-<p id="tot_time">Total Time: </p>
+<p id="tot_time" class="time_div"><span>Total Time: </span></p>
 
-<p id="tot_work_time">Total Time Working: </p>
+<p id="tot_work_time" class="time_div"><span>Total Time Working: </span></p>
 
-<p id="tot_waste_time">Total Time Wasted: </p>
+<p id="tot_waste_time" class="time_div"><span>Total Time Wasted: </span></p>
 
-<p>From: <input type="text" id="from" value="mm/dd/yy" />
-   To:   <input type="text" id="to"   value="mm/dd/yy" />
-   <button type="button" id="week_button" style="margin-left:1cm;" title="Sunday-Saturday">This Week</button>
+<p style="user-select:none;">
+  <span title="Inclusive Date Range">
+    From: <input type="text" id="from" value="mm/dd/yy" title="" />
+    To:   <input type="text" id="to"   value="mm/dd/yy" title="" />
+  </span>
+  <button type="button" id="this_week_button" style="margin-left:1cm;" title="Sunday-Saturday">This Week</button>
+  <button type="button" id="last_week_button">Last Week</button>
+  <button type="button" id="total_button">Total</button>
 </p>
 
 <div>
@@ -33,7 +38,9 @@
 
 <div id="svg_div" align="center"></div>
 
-<div align="center"><button type="button" id="reset_button" title="Restore Hidden Tasks and Default Dates" style="visibility:hidden;">Reset</button></div>
+<div align="center" style="user-select:none;">
+  <button type="button" id="reset_button" title="Restore Hidden Tasks and Default Dates" style="visibility:hidden;">Reset</button>
+</div>
 
 <script src="scripts/d3.v4.min.js"></script>
 <script id="var_defs" src="Statistics.js"></script>
