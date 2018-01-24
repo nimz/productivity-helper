@@ -19,15 +19,6 @@ function validateDate(i) {
   lastDateInput[i] = datestr;
   lastDateInputN[0] = Date.parse(lastDateInput[0]);
   lastDateInputN[1] = Date.parse(lastDateInput[1]); // update both, for simplicity
-  if (lastDateInputN[1] < lastDateInputN[0]) {
-    if (i == 0)
-      alert("Start date should not be after end date!");
-    else
-      alert("End date should not be before start date!");
-    lastDateInput[i] = lastDateInput[1-i];
-    d3.select(selectedId).property("value", lastDateInput[i]);
-    lastDateInputN[i] = lastDateInputN[1-i];
-  }
   loaded = false;
   processData();
 }
@@ -324,10 +315,14 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
       tasks.push([key, workInfo[key]]);
       workTotals2.push(workInfo[key]);
     }
-    tasks.push(["Break", workTotals1[1]]);
-    tasks.push(["Wasted", workTotals1[2]]);
-    workTotals2.push(workTotals1[1]);
-    workTotals2.push(workTotals1[2]);
+    if (!deletedSet.has("Break")) {
+      tasks.push(["Break", workTotals1[1]]);
+      workTotals2.push(workTotals1[1]);
+    }
+    if (!deletedSet.has("Wasted")) {
+      tasks.push(["Wasted", workTotals1[2]]);
+      workTotals2.push(workTotals1[2]);
+    }
     loaded = true;
     tot_times = [sessLength, workTotals1[0], workTotals1[2]];
     for (let i = 0; i < 3; i++)
