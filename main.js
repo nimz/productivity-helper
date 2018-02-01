@@ -389,7 +389,7 @@ function processData() { // TODO: Put d3 visualizations in separate file for fas
           d3.select(this).style("fill", hoverizeColor(colors[i]));
           d3.select(this.parentNode).append("text")
             .attr("fill", "black")
-            .attr("style", "pointer-events: none; user-select: none;")
+            .attr("style", "pointer-events:none; user-select:none;")
             .attr("class", "hovertext")
             .text(function(d){ return (showSecsOnly ? d[1] + "s" : timeString(d[1])) + " (" + (d[1]/sessLength*100).toFixed(1) + "%)"; })
             .attr("transform", function(d){ return "translate(-" + (this.getComputedTextLength() + legendTextOffsetX) + ", " + (legendSqSize / 2 + legendTextOffsetY) + ")"; });
@@ -428,6 +428,11 @@ function computeTextWidths(input_text) {
 function resetClicks(ignore) {
   for (let i = 0; i < clicked.length; i++) { if (i == ignore) continue; clicked[i] = false; }
 }
+function stripTask(str) {
+  if (str.substring(0, 6) === "Task: ")
+    return str.substring(6);
+  return str;
+}
 function setPiechartMouseoverText() {
   var g = svg.selectAll("g");
   var label = d3.arc().outerRadius(radius*1.5).innerRadius(radius*1.5);
@@ -444,9 +449,9 @@ function setPiechartMouseoverText() {
                         cent[1] -= arcTextOffsetY;
                         return "translate(" + cent + ")"; })
                      .attr("fill", "black")
-                     .attr("style", "pointer-events: none; user-select: none;")
                      .attr("class", isClick ? "click" : "mouseover")
-                     .text(function(d){ return (showSecsOnly ? d.data + "s" : timeString(d.data)) + " (" + (d.data/sessLength*100).toFixed(1) + "%)"; });
+                     .text(function(d){ return stripTask(categoryNames[i]) + ": " + (showSecsOnly ? d.data + "s" : timeString(d.data)) + " (" + (d.data/sessLength*100).toFixed(1) + "%)"; })
+                     .attr("style", "pointer-events:none; user-select:none; font-size:80%;");
     }
   };
   var delfun = function(d,i,elem,isClick){

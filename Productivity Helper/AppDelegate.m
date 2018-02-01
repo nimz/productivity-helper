@@ -197,7 +197,7 @@ int numDays = 0;
     NSLocale *usLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
     [dateFormatter setLocale:usLocale];
     outputFormatter = [[NSDateFormatter alloc] init];
-    [outputFormatter setDateFormat:@"MM/DD/YY HH:mm:ss"];
+    [outputFormatter setDateFormat:@"MM/dd/yy HH:mm:ss"];
     timerFormatter = [[NSDateFormatter alloc] init];
     [timerFormatter setDateFormat:@"HH:mm:ss"];
     [timerFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0.0]];
@@ -248,7 +248,7 @@ int numDays = 0;
     [task setStandardOutput:pipe];
     [task setStandardError:pipe];
     [task launch];
-    NSLog (@"Server running on port %@", portString);
+    NSLog(@"Server running on port %@", portString);
 }
 
 + (void)stopServer {
@@ -257,11 +257,11 @@ int numDays = 0;
     [task setArguments:[NSArray arrayWithObjects:killServerPath, portString, nil]];
     [task setStandardOutput:[NSPipe pipe]];
     [task launch];
-    NSLog (@"Server on port %@ killed", portString);
+    NSLog(@"Server on port %@ killed", portString);
 }
 
 + (NSString *)getTimeString {
-    NSDate * now = [NSDate date];
+    NSDate *now = [NSDate date];
     NSString *start = [outputFormatter stringFromDate:now];
     return start;
 }
