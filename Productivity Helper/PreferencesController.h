@@ -19,5 +19,6 @@
 - (bool)showSeconds;
 - (bool)doConfirm;
 - (bool)doHighlight;
+- (void)initializePrefs:(NSString *)aPrefsFile createNew:(bool)doCreate;
 
 @end

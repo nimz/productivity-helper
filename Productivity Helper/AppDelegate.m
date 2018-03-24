@@ -18,8 +18,8 @@ bool slacking = false, breaking = false, working = false;
 bool showSecondsLast = true;
 
 NSString *basedir = @"Productivity Helper/";
-NSString *documentsDir, *statsFile, *jsFile, *redirFile, *visualizationFile,
-         *mainJSFile, *d3File, *iconFile, *readmeFile;
+NSString *documentsDir, *statsFile, *prefsFile, *jsFile, *redirFile,
+         *visualizationFile, *mainJSFile, *d3File, *iconFile, *readmeFile;
 NSString *portString;
 NSString *setupScriptPath;
 NSString *killServerPath;
@@ -72,6 +72,7 @@ int numDays = 0;
     if (0 < [paths count]) {
         documentsDir = [[paths objectAtIndex:0] stringByAppendingString:@"/"];
         statsFile = [NSString stringWithFormat:@"%@%@%@", documentsDir, basedir, @"Statistics.txt"];
+        prefsFile = [NSString stringWithFormat:@"%@%@%@", documentsDir, basedir, @"Preferences.txt"];
         jsFile = [NSString stringWithFormat:@"%@%@%@", documentsDir, basedir, @"Statistics.js"];
         redirFile = [NSString stringWithFormat:@"%@%@%@", documentsDir, basedir, @"Stats_redir.html"];
         visualizationFile = [NSString stringWithFormat:@"%@%@%@", documentsDir, basedir, @"Stats.html"];
@@ -177,6 +178,24 @@ int numDays = 0;
     portString = [NSString stringWithFormat:@"%u", PORT];
     [AppDelegate initializeDirectories];
     [AppDelegate setupServer];
+    [self initializeStatsFile];
+    dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.timeStyle = NSDateFormatterNoStyle;
+    dateFormatter.dateStyle = NSDateFormatterShortStyle;
+    NSLocale *usLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+    [dateFormatter setLocale:usLocale];
+    outputFormatter = [[NSDateFormatter alloc] init];
+    [outputFormatter setDateFormat:@"MM/dd/yy HH:mm:ss"];
+    timerFormatter = [[NSDateFormatter alloc] init];
+    [timerFormatter setDateFormat:@"HH:mm:ss"];
+    [timerFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0.0]];
+    [_startButton setEnabled:YES];
+    [_startMenuItem setEnabled:YES];
+    [self initializeAuxiliaryFiles:bundle];
+    [self initializePrefs];
+}
+
+- (void)initializeStatsFile {
     if ([fileManager fileExistsAtPath:statsFile]) {
         NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:statsFile];
         NSData *data = [fileHandler readDataOfLength:10];
@@ -191,19 +210,14 @@ int numDays = 0;
             prevNumDays = initialNumDays;
         }
     }
-    dateFormatter = [[NSDateFormatter alloc] init];
-    dateFormatter.timeStyle = NSDateFormatterNoStyle;
-    dateFormatter.dateStyle = NSDateFormatterShortStyle;
-    NSLocale *usLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
-    [dateFormatter setLocale:usLocale];
-    outputFormatter = [[NSDateFormatter alloc] init];
-    [outputFormatter setDateFormat:@"MM/dd/yy HH:mm:ss"];
-    timerFormatter = [[NSDateFormatter alloc] init];
-    [timerFormatter setDateFormat:@"HH:mm:ss"];
-    [timerFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0.0]];
-    [_startButton setEnabled:YES];
-    [_startMenuItem setEnabled:YES];
-    [self initializeAuxiliaryFiles:bundle];
+}
+
+- (void)initializePrefs {
+    bool dne = ![fileManager fileExistsAtPath:prefsFile];
+    if (!prefController) {
+        prefController = [[PreferencesController alloc] initWithWindowNibName:@"Preferences"];
+    }
+    [prefController initializePrefs:prefsFile createNew:dne];
 }
 
 - (void)initializeAuxiliaryFiles:(NSBundle *)bundle {

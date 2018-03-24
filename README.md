@@ -47,14 +47,14 @@ Note: Feel free to close your computer while the application is running!
 
 ## Installation
 To download this application on Mac, clone the git directory and open the
-.xcodeproj file and build it in XCode (hit the triangular "play" button in the
-top left). You can then click and hold the application icon and select
-"Keep in Dock", so you do not need to open XCode again. If desired, you can also
-set the application to Open at Login (the same way). In the future, this
-application will be made available in ready-to-use format, so that users do not
-need XCode or have to build it themselves. (Note: This application requires
-Mac OS X 10.10 or above, as well as a reasonably up-to-date version of
-Google Chrome.)
+.xcodeproj file and build it in XCode (hit the triangular "play" button in
+the top left). You can then click and hold the application icon and select
+"Keep in Dock", so you do not need to open XCode again and can thereafter start
+the application directly from your Dock. If desired, you can also set the
+application to Open at Login (the same way). In the future, this application
+will be made available in ready-to-use format, so that users do not need XCode
+or have to build it themselves. (Note: This application requires Mac OS X
+10.10 or above, as well as a reasonably up-to-date version of Google Chrome.)
 
 ## Appearance
 The user interface is currently fairly barebones. There are plans to improve it,
@@ -65,8 +65,8 @@ Screenshot of the main application:
 ![Loading application screenshot...](https://raw.githubusercontent.com/nimz/productivity-helper/master/readme-images/main-screenshot.png)
 
 The main application floats on top of other windows, so that the user does not
-forget to log their activities. The window may be resized. Some preferences can
-be set in the Preferences pane, with more to be added soon.
+forget to log their activities. The window may be resized or hidden.
+Some preferences can be set in the Preferences pane, with more to be added soon.
 
 Screenshot of an example graphic on the data visualization page:  
 ![Loading visualization screenshot...](https://raw.githubusercontent.com/nimz/productivity-helper/master/readme-images/viz-screenshot.png)
@@ -74,7 +74,7 @@ Screenshot of an example graphic on the data visualization page:
 ## Suggestions
 Comments or suggestions? Add them [here](https://docs.google.com/document/d/1kkbP_bXsXUXItFyJ904AYzuie57umbViFR10OKT3MgM/).
 
-For the moment, please reserve creation of issues to report actual bugs
+For the moment, please reserve creation of GitHub issues to report actual bugs
 (although even bugs can also be put in the Google Doc instead).
 
 Enjoy!
