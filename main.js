@@ -80,8 +80,24 @@ function setWeek(offset=0) {
   loaded = false;
   processData();
 }
+function setToday() {
+  var dayStart = new Date(loadDate.getTime());
+  dayStart.setHours(0); dayStart.setMinutes(0); dayStart.setSeconds(0); dayStart.setMilliseconds(0);
+  var nextDay = new Date(dayStart.getTime());
+  nextDay.setDate(dayStart.getDate() + 1);
+  var dayEnd = new Date(nextDay.getTime() - 1);
+  var fromStr = timeStr(dayStart, false, true), toStr = fromStr;
+  if (lastDateInput[0] === fromStr && lastDateInput[1] === toStr) return; // no change
+  lastDateInput = [fromStr, toStr];
+  lastDateInputN = [dayStart.valueOf(), dayEnd.valueOf()];
+  d3.select("#from").property("value", lastDateInput[0]);
+  d3.select("#to").property("value", lastDateInput[1]);
+  loaded = false;
+  processData();
+}
 d3.select("#this_week_button").on("click", setWeek);
 d3.select("#last_week_button").on("click", function(){ setWeek(7); });
+d3.select("#today_button").on("click", setToday);
 d3.select("#total_button").on("click", function(){ reset(dateonly=true); });
 
 function leadingZero(i) {
